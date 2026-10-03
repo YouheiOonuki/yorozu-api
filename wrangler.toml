@@ -1,0 +1,14 @@
+# yorozu-api（Cloudflare Workers）。デプロイはオーナーの Cloudflare アカウントで（README「オーナーの手順」）
+name = "yorozu-api"
+main = "src/index.mjs"
+compatibility_date = "2026-09-01"
+# workers.dev の URL（https://yorozu-api.<アカウントのサブドメイン>.workers.dev）で公開する。独自ドメインは K135（DNS を Cloudflare 経由）のあと
+workers_dev = true
+preview_urls = false
+
+# 入力を保存しない: Workers Logs（console の出力と呼び出しの記録）を使わない。数はダッシュボードの「要求数」だけを見る
+[observability]
+enabled = false
+
+# 無料枠の上限で止まる: このアカウントを Workers Free プランのままにする（1 日 10 万要求。超えた分はエラーで返り、課金されない）。
+# Workers Paid に上げない限り請求は起きない。Paid にしたときは CPU 時間の上限をここで決める（[limits] cpu_ms）

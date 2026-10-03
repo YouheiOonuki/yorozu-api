@@ -1,0 +1,16 @@
+{
+  "name": "yorozu-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "yorozu-craft の計算 API とリモート MCP サーバー（Cloudflare Workers）",
+  "license": "MIT",
+  "scripts": {
+    "sync": "node tools/sync-lib.mjs",
+    "test": "node tools/sync-lib.mjs --check && node --test tests/*.test.mjs",
+    "dev": "wrangler dev",
+    "deploy": "node tools/sync-lib.mjs --check && node --test tests/*.test.mjs && wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.147.0"
+  }
+}

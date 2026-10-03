@@ -1,0 +1,37 @@
+{
+  "note": "vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない",
+  "synced_at": "2026-10-03",
+  "repos": {
+    "seido-keisan": {
+      "url": "https://github.com/YouheiOonuki/seido-keisan",
+      "ref": "origin/main",
+      "commit": "312688e8d777ba698b68d938f95f05bb17338658",
+      "files": {
+        "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
+        "lib/kogaku-values.js": "26575f5ffb65eef9aee39c6423a3f38c551f07b9",
+        "lib/kuriage.js": "4f10890d15e1a9e7c147ee2e8457ea10e6ce9a82",
+        "lib/kuriage-values.js": "029a5792c36c4d7f54e60cbd8d5e7a10ce89d9c0",
+        "lib/shienkin.js": "bee85d38638f48b7db86a2255c218bd31e418e87",
+        "lib/shienkin-values.js": "bb1fd43d617c0544fc62e0e973e39b8906fbff9d",
+        "lib/ikukyu-values.js": "1a35ccf85a397e0f89732bfee4e9afe273f62427",
+        "lib/invoice.js": "64cabc7e76e60939fcff3d6bddcb4bd71e7c048e",
+        "lib/invoice-values.js": "9c77d2eb9a9c7480d5a8cf8fe7edb2bcac5dff9a",
+        "lib/nenmatsu.js": "c92becf4b308f59b407a8746aa8417fe2101669b",
+        "lib/tax2026.js": "89691c3d9c3675fa2f1b9e8feb4cc6ee555dedb7",
+        "lib/kyuyo-table-2025.js": "a1bd4aaae2a38c9f3af14243040fafd4de7abd10",
+        "lib/kyuyo-table-2026.js": "15783b2621163da6c1711016d3c7fdd484df493a",
+        "lib/juminzei.js": "220a793e643a31caae138fa06d3ab3a12e42dea9",
+        "lib/juminzei-values.js": "cefc504b1cbc7195a6951fbdeac73ce822145c6e"
+      }
+    },
+    "gengo": {
+      "url": "https://github.com/YouheiOonuki/gengo",
+      "ref": "origin/main",
+      "commit": "34497cefc8c031783a516dbd37cacb2e68a3a965",
+      "files": {
+        "calc.js": "a8f03c0074696986876859c72e8ff8dc2f7f9421",
+        "constants.js": "fb4754d0471efea42c7896d0f7fd51577c318968"
+      }
+    }
+  }
+}

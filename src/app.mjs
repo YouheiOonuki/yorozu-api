@@ -67,12 +67,38 @@ function index(base) {
 
 /* ---------- MCP（JSON-RPC 2.0。Streamable HTTP の POST に JSON で答える） ---------- */
 const PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05'];
+// MCP の inputSchema のキーは /^[a-zA-Z0-9_.-]{1,64}$/ でないとクライアント（Claude など）が道具ごと捨てる。
+// 「a.b」「rows.0.cost」「self.*」は先頭の名前のオブジェクト（数字が続けば配列）にまとめ、中の項目は説明に書く
+export function schemaProps(params) {
+  const props = {};
+  for (const [k, v] of Object.entries(params)) {
+    const [head, ...rest] = k.split('.');
+    if (!rest.length) { props[head] = { description: v }; continue; }
+    const isArr = /^\d+$/.test(rest[0]);
+    const sub = (isArr ? rest.slice(1) : rest).join('.');
+    const p = props[head] || (props[head] = { type: isArr ? 'array' : 'object', description: '' });
+    p.description += (p.description ? '; ' : '') + (sub === '*' ? v : sub + ' = ' + v);
+  }
+  return props;
+}
+
+// クライアントが「a.b」のような平らなキーで送ってきても、入れ子にして lib に渡す
+function nestArgs(args) {
+  const flat = Object.entries(args).filter(([k]) => k.includes('.'));
+  if (!flat.length) return args;
+  const out = { ...args };
+  for (const [k] of flat) delete out[k];
+  const nested = parseQuery(flat.map(([k, v]) => [k, v]));
+  for (const [k, v] of Object.entries(nested)) out[k] = (out[k] && typeof out[k] === 'object' && typeof v === 'object') ? Object.assign(out[k], v) : v;
+  return out;
+}
+
 export function mcpTools() {
   const tools = CALCS.map((c) => ({
     name: c.tool,
     title: c.title,
     description: c.description.ja + '\n' + c.description.en + '\n入力 / Inputs: ' + Object.entries(c.params).map(([k, v]) => k + ' = ' + v).join('; '),
-    inputSchema: { type: 'object', properties: Object.fromEntries(Object.entries(c.params).map(([k, v]) => [k, { description: v }])), required: c.required, additionalProperties: true },
+    inputSchema: { type: 'object', properties: schemaProps(c.params), required: c.required, additionalProperties: true },
     annotations: { readOnlyHint: true, openWorldHint: false, idempotentHint: true },
   }));
   tools.push({
@@ -84,7 +110,7 @@ export function mcpTools() {
   return tools;
 }
 function callTool(name, args) {
-  args = args && typeof args === 'object' ? args : {};
+  args = args && typeof args === 'object' ? nestArgs(args) : {};
   if (name === 'list_high_cost_medical_categories') return { result: BY_NAME.kogaku.extra.categories(args), meta: meta(BY_NAME.kogaku, args) };
   const c = BY_TOOL[name];
   if (!c) return null;

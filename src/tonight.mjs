@@ -94,9 +94,11 @@ export function tonight(input = {}) {
   const date = /^\d{4}-\d{2}-\d{2}$/.test(input.date || '') ? input.date : jstYmd(input.now ?? Date.now());
   const ms = jstMs(date);
   const { name, lat, lon } = pref;
-  const south = constellations(ms, lat, lon)
-    .filter((c) => c.center.alt >= MIN_ALT_CONS && c.center.az >= 90 && c.center.az <= 270)
-    .sort((a, b) => a.star.mag - b.star.mag || b.center.alt - a.center.alt)
+  // まず南東〜南〜南西（112.5〜247.5°。hoshizora-night の共有 URL を開いた最初の画面に入る）から、足りなければ南の半分（90〜270°）から
+  const all = constellations(ms, lat, lon).filter((c) => c.center.alt >= MIN_ALT_CONS && c.center.az >= 90 && c.center.az <= 270)
+    .sort((a, b) => a.star.mag - b.star.mag || b.center.alt - a.center.alt);
+  const near = all.filter((c) => c.center.az >= 112.5 && c.center.az <= 247.5);
+  const south = [...near, ...all.filter((c) => !near.includes(c))]
     .slice(0, 3)
     .map((c) => ({
       id: c.id, name: c.name, dir: dir8(c.center.az), alt: Math.round(c.center.alt), az: Math.round(c.center.az),

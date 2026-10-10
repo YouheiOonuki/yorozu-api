@@ -62,6 +62,7 @@ function preMeijiYear(text) {
     eras,
     dateIgnored: Boolean(p.m),
     note: '明治より前は改元の日が旧暦のため、年の対応だけです（旧暦の年末は西暦の翌年の 1〜2 月）。',
+    source: { label: GengoC.preMeiji.source, url: GengoC.preMeiji.url, checked: GengoC.preMeiji.checked },
   };
 }
 

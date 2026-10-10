@@ -27,10 +27,21 @@
     "gengo": {
       "url": "https://github.com/YouheiOonuki/gengo",
       "ref": "main",
-      "commit": "ed2f20afe6835dff3b81159ccf179adbcddc4386",
+      "commit": "c01d59c6e17506e4fe034fb216593c1d0da2d266",
       "files": {
         "calc.js": "aee6e245c9464d2929d6acfcf52e90b5a33d03c2",
         "constants.js": "d238e82078254991478e4601e2c99ebfe4331300"
+      }
+    },
+    "hoshizora-night": {
+      "url": "https://github.com/YouheiOonuki/hoshizora-night",
+      "ref": "main",
+      "commit": "9e3645fd56ff2fb5c650d7fb3403accce4946f89",
+      "files": {
+        "engine/astro.js": "0eff2875f9f6e3c18238925c0438424cf71b9b23",
+        "engine/data.js": "5ab1af1d52e37f1ecaa49b503f820072a0086794",
+        "render/prefectures.js": "2da7547b67dd3d168c0bbe5a0cdec1175bc720e4",
+        "render/look.js": "d3c6a593d3459d951dd070c5825146b27f24e501"
       }
     }
   }

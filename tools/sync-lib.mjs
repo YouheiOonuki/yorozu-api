@@ -24,6 +24,8 @@ export const FILES = {
     'lib/juminzei.js', 'lib/juminzei-values.js',
   ],
   gengo: ['calc.js', 'constants.js'],
+  // 今夜の星空（K156）: 位置の計算・星座・都道府県庁・共有 URL。look.js は ../engine/astro.js を読むので並びのまま写す
+  'hoshizora-night': ['engine/astro.js', 'engine/data.js', 'render/prefectures.js', 'render/look.js'],
 };
 
 // git の blob の SHA-1（git hash-object と同じ）

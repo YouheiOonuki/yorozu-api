@@ -29,16 +29,16 @@ test('src/ は計算をしない: lib の関数を呼ぶだけ（税率・上限
   for (const n of ['270300', '0.004', '0.007', '0.23', '102.1', '7.8', '22/78']) assert.ok(!s.includes(n), n);
 });
 
-test('/v1: 計算の一覧（8 つ）、各計算の返り値に meta（出典・確認日・免責の文・写した元の commit）', async () => {
+test('/v1: 計算の一覧（9 つ。今夜の星空 K156 を足した）、各計算の返り値に meta（出典・確認日・免責の文・写した元の commit）', async () => {
   const r = await call('/v1');
   assert.equal(r.status, 200);
   const j = await r.json();
-  assert.deepEqual(j.calcs.map((c) => c.name), ['nenmatsu', 'juminzei', 'kogaku', 'nenkin-kuriage', 'shienkin', 'invoice', 'wareki', 'gakunen']);
+  assert.deepEqual(j.calcs.map((c) => c.name), ['nenmatsu', 'juminzei', 'kogaku', 'nenkin-kuriage', 'shienkin', 'invoice', 'wareki', 'gakunen', 'tonight']);
   const samples = {
     nenmatsu: 'income=5000000&withheld=100000&shakai=700000', juminzei: 'income=5000000&shakai=700000',
     kogaku: 'period=r8&cat=u&rows.0.cost=1000000', 'nenkin-kuriage': 'birth=1962-04-02&kiso=1200000&age=62',
     shienkin: 'kind=kaisha&mode=hyojun&amount=300000', invoice: 'year=2027&uriage=7700000',
-    wareki: 'date=' + encodeURIComponent('令和8年5月1日'), gakunen: 'birth=2019-04-02&fy=2026',
+    wareki: 'date=' + encodeURIComponent('令和8年5月1日'), gakunen: 'birth=2019-04-02&fy=2026', tonight: 'pref=' + encodeURIComponent('大阪') + '&date=2026-10-11',
   };
   for (const c of j.calcs) {
     const res = await call('/v1/' + c.name + '?' + samples[c.name]);

@@ -17,6 +17,7 @@ import JuminzeiV from '../vendor/seido-keisan/lib/juminzei-values.js';
 import Calc from '../vendor/gengo/calc.js';
 import GengoC from '../vendor/gengo/constants.js';
 import SOURCES from '../vendor/SOURCES.json' with { type: 'json' };
+import { tonight } from './tonight.mjs';
 
 const SITE = 'https://yorozu-craft.com/';
 const src = (list) => list.map((s) => ({ label: s.label, url: s.url }));
@@ -209,6 +210,28 @@ export const CALCS = [
     meta() {
       const k = ['schoolEntry', 'schoolYear', 'ageLaw', 'civilCode143'].map((x) => GengoC[x]);
       return { source: k.map((x) => ({ label: x.label, url: x.url })), checked: k.map((x) => x.checked).sort().at(-1), lib: lib('gengo', ['calc.js', 'constants.js']) };
+    },
+  },
+  {
+    // yorozu-plans ROADMAP 7.35.2 K156、企画書 82。LINE の「今夜の星空」が使う
+    name: 'tonight', tool: 'tonight_sky_japan', page: SITE + 'hoshizora-night/',
+    title: '今夜の星空（都道府県庁の場所の 21 時）',
+    description: {
+      ja: '都道府県（空なら東京都）の県庁の場所で、その日の 21 時（日本時間）に南に見える星座 3 つ・月齢と月の出入り・明るい惑星 1 つと、星空のページの URL を返します。場所は都道府県だけで、市町村や位置情報は受けません。',
+      en: 'For a Japanese prefecture (default Tokyo), returns three constellations in the southern sky at 21:00 JST from the prefectural office, the moon\'s age and rise and set times, one bright planet, and a link to the star map. Only prefectures are accepted, not cities or coordinates.',
+    },
+    params: { pref: '都道府県の名前（「大阪」「大阪府」。空なら東京都）', date: 'YYYY-MM-DD（空なら日本時間の今日）' },
+    required: [],
+    run(input) { return tonight(input); },
+    meta() {
+      return {
+        source: [
+          { label: 'Yale Bright Star Catalogue, 5th Revised Ed.（Hoffleit & Warren 1991。星の位置と明るさ。ほしぞらさんぽの星表と同じ）', url: SITE + 'hoshizora-sanpo/' },
+          { label: '都道府県庁の位置: 国土地理院「地理院地図」の住所検索と国土数値情報（ほしぞらさんぽ フル版の render/prefectures.js）', url: SITE + 'hoshizora-night/' },
+        ],
+        checked: '2026-10-03',
+        lib: lib('hoshizora-night', ['engine/astro.js', 'engine/data.js', 'render/prefectures.js', 'render/look.js']),
+      };
     },
   },
 ];

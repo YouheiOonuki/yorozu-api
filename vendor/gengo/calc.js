@@ -33,10 +33,10 @@
   var GREGORIAN = parseYmd(K.gregorianAdoption.value);   // 1873-01-01
   function eraByKey(key) {
     for (var i = 0; i < ERAS.length; i++) if (ERAS[i].key === key) return ERAS[i];
-    return null;
+    return preEraByKey(key);   // 明治より前（年だけ）
   }
   /** その元号の最後の年（今の元号は null） */
-  function lastYearOf(era) { return era.endD ? era.endD.y - era.startD.y + 1 : null; }
+  function lastYearOf(era) { return era.preMeiji ? era.last : era.endD ? era.endD.y - era.startD.y + 1 : null; }
 
   /**
    * 西暦の日付 → 和暦
@@ -69,6 +69,23 @@
     return out;
   }
 
+  // --- 明治より前（江戸期: 慶長〜慶応。K158）。改元の日は旧暦なので、年の対応だけを扱う ---
+  var PRE = ((K.preMeiji && K.preMeiji.value) || []).map(function (e) { return Object.assign({ preMeiji: true }, e); });
+  var PRE_FIRST = PRE.length ? PRE[0].start : null;   // 1596（慶長元年）
+  function preEraByKey(key) {
+    for (var i = 0; i < PRE.length; i++) if (PRE[i].key === key) return PRE[i];
+    return null;
+  }
+  /**
+   * 西暦の年 → 明治より前の和暦の年（改元の年は 2 つ）。慶長元年（1596）より前と、1868 年以後は空
+   * @returns {Array<{era:object, year:number, lunar:true, preMeiji:true}>}
+   */
+  function preErasOfYear(y) {
+    if (!PRE.length || y < PRE_FIRST || y >= ERAS[0].startD.y) return [];
+    return PRE.filter(function (e) { return y >= e.start && y <= e.start + e.last - 1; })
+      .map(function (e) { return { era: e, year: y - e.start + 1, lunar: true, preMeiji: true }; });
+  }
+
   /** 和暦の年の表記: 令和元年・令和8年／Reiwa 1・Reiwa 8 */
   function formatEraYear(era, year, lang) {
     if (lang === 'en') return era.romaji + ' ' + year;
@@ -98,6 +115,13 @@
    *   error: 'era'（元号が無い）| 'year'（その元号に無い年）| 'date'（存在しない日付）| 'outOfEra'（その元号の期間の外。correct に正しい和暦）
    */
   function toSeireki(key, year, m, d) {
+    var pre = preEraByKey(key);
+    if (pre) {
+      // 明治より前: 年だけ。月日は旧暦なので直さない（入っていれば dateIgnored）
+      if (!Number.isInteger(year) || year < 1) return { ok: false, error: 'year' };
+      if (year > pre.last) return { ok: false, error: 'year', last: pre.last, era: pre };
+      return { ok: true, y: pre.start + year - 1, era: pre, year: year, lunar: true, preMeiji: true, dateIgnored: !!m };
+    }
     var era = eraByKey(key);
     if (!era) return { ok: false, error: 'era' };
     if (!Number.isInteger(year) || year < 1) return { ok: false, error: 'year' };
@@ -151,6 +175,11 @@
     ERA_WORDS.push([e.kanji, e.key], [e.kana, e.key], [e.romaji.toLowerCase(), e.key],
       [e.romaji.toLowerCase().replace('ō', 'o'), e.key], [e.romaji.toLowerCase().replace('ō', 'ou'), e.key],
       [e.romaji.toLowerCase().replace('ō', 'oh'), e.key]);
+  });
+  // 明治より前は漢字・かな・ローマ字（長音の記号とアポストロフィを外した形も）
+  PRE.forEach(function (e) {
+    var r = e.romaji.toLowerCase();
+    ERA_WORDS.push([e.kanji, e.key], [e.kana, e.key], [r, e.key], [r.replace(/[ōū]/g, function (c) { return c === 'ō' ? 'o' : 'u'; }).replace(/'/g, ''), e.key]);
   });
   ERA_WORDS.push(['syowa', 'showa'], ['taisyo', 'taisho'], ['meiji', 'meiji']);
   ERA_WORDS.sort(function (a, b) { return b[0].length - a[0].length; });
@@ -511,7 +540,7 @@
 
   var api = {
     isLeap: isLeap, validDate: validDate, parseYmd: parseYmd, ymdStr: ymdStr, cmp: cmp, addDays: addDays,
-    ERAS: ERAS, eraByKey: eraByKey, lastYearOf: lastYearOf, eraOf: eraOf, erasOfYear: erasOfYear,
+    ERAS: ERAS, eraByKey: eraByKey, lastYearOf: lastYearOf, eraOf: eraOf, erasOfYear: erasOfYear, PRE_MEIJI_ERAS: PRE, preErasOfYear: preErasOfYear,
     formatEraYear: formatEraYear, formatWareki: formatWareki, formatAbbr: formatAbbr, MONTHS_EN: MONTHS_EN,
     toSeireki: toSeireki, parseJaNumber: parseJaNumber, parseInput: parseInput, inputToDate: inputToDate,
     ageAt: ageAt, anniversary: anniversary, isHayaumare: isHayaumare, schoolEntryYear: schoolEntryYear,

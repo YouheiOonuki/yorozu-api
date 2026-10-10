@@ -1,11 +1,11 @@
 {
   "note": "vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない",
-  "synced_at": "2026-10-03",
+  "synced_at": "2026-10-10",
   "repos": {
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
-      "ref": "origin/main",
-      "commit": "312688e8d777ba698b68d938f95f05bb17338658",
+      "ref": "main",
+      "commit": "9e6a921d82d89f55c6cf7f38e10dab7711a10ade",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "26575f5ffb65eef9aee39c6423a3f38c551f07b9",
@@ -26,11 +26,11 @@
     },
     "gengo": {
       "url": "https://github.com/YouheiOonuki/gengo",
-      "ref": "origin/main",
-      "commit": "34497cefc8c031783a516dbd37cacb2e68a3a965",
+      "ref": "main",
+      "commit": "ed2f20afe6835dff3b81159ccf179adbcddc4386",
       "files": {
-        "calc.js": "a8f03c0074696986876859c72e8ff8dc2f7f9421",
-        "constants.js": "fb4754d0471efea42c7896d0f7fd51577c318968"
+        "calc.js": "aee6e245c9464d2929d6acfcf52e90b5a33d03c2",
+        "constants.js": "d238e82078254991478e4601e2c99ebfe4331300"
       }
     }
   }

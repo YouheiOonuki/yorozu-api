@@ -54,6 +54,54 @@
       }
     ],
 
+    // 明治より前（江戸期: 慶長〜慶応）の元号。改元の日は旧暦（太陰太陽暦）なので、西暦の月日には直さず「年の対応」だけを持つ（yorozu-plans K158）。
+    // value の start: 元年に当たる西暦の年、last: 最後の年（慶長は 20 年まで）。和暦の年 n ＝ 西暦 start + n − 1（年の対応の慣例。旧暦の年末は西暦の翌年の 1〜2 月）。
+    // 慶応 4 年＝1868 年は明治元年（明治元年9月8日の詔で慶応4年1月1日にさかのぼる: 上の ERAS の meiji）
+    preMeiji: {
+      value: [
+      { key: 'keicho', kanji: '慶長', kana: 'けいちょう', romaji: 'Keichō', start: 1596, last: 20 },
+      { key: 'genna', kanji: '元和', kana: 'げんな', romaji: 'Genna', start: 1615, last: 10 },
+      { key: 'kanei', kanji: '寛永', kana: 'かんえい', romaji: "Kan'ei", start: 1624, last: 21 },
+      { key: 'shoho', kanji: '正保', kana: 'しょうほう', romaji: 'Shōhō', start: 1644, last: 5 },
+      { key: 'keian', kanji: '慶安', kana: 'けいあん', romaji: 'Keian', start: 1648, last: 5 },
+      { key: 'joo', kanji: '承応', kana: 'じょうおう', romaji: 'Jōō', start: 1652, last: 4 },
+      { key: 'meireki', kanji: '明暦', kana: 'めいれき', romaji: 'Meireki', start: 1655, last: 4 },
+      { key: 'manji', kanji: '万治', kana: 'まんじ', romaji: 'Manji', start: 1658, last: 4 },
+      { key: 'kanbun', kanji: '寛文', kana: 'かんぶん', romaji: 'Kanbun', start: 1661, last: 13 },
+      { key: 'enpo', kanji: '延宝', kana: 'えんぽう', romaji: 'Enpō', start: 1673, last: 9 },
+      { key: 'tenna', kanji: '天和', kana: 'てんな', romaji: 'Tenna', start: 1681, last: 4 },
+      { key: 'jokyo', kanji: '貞享', kana: 'じょうきょう', romaji: 'Jōkyō', start: 1684, last: 5 },
+      { key: 'genroku', kanji: '元禄', kana: 'げんろく', romaji: 'Genroku', start: 1688, last: 17 },
+      { key: 'hoei', kanji: '宝永', kana: 'ほうえい', romaji: 'Hōei', start: 1704, last: 8 },
+      { key: 'shotoku', kanji: '正徳', kana: 'しょうとく', romaji: 'Shōtoku', start: 1711, last: 6 },
+      { key: 'kyoho', kanji: '享保', kana: 'きょうほう', romaji: 'Kyōhō', start: 1716, last: 21 },
+      { key: 'genbun', kanji: '元文', kana: 'げんぶん', romaji: 'Genbun', start: 1736, last: 6 },
+      { key: 'kanpo', kanji: '寛保', kana: 'かんぽう', romaji: 'Kanpō', start: 1741, last: 4 },
+      { key: 'enkyo', kanji: '延享', kana: 'えんきょう', romaji: 'Enkyō', start: 1744, last: 5 },
+      { key: 'kanen', kanji: '寛延', kana: 'かんえん', romaji: "Kan'en", start: 1748, last: 4 },
+      { key: 'horeki', kanji: '宝暦', kana: 'ほうれき', romaji: 'Hōreki', start: 1751, last: 14 },
+      { key: 'meiwa', kanji: '明和', kana: 'めいわ', romaji: 'Meiwa', start: 1764, last: 9 },
+      { key: 'anei', kanji: '安永', kana: 'あんえい', romaji: "An'ei", start: 1772, last: 10 },
+      { key: 'tenmei', kanji: '天明', kana: 'てんめい', romaji: 'Tenmei', start: 1781, last: 9 },
+      { key: 'kansei', kanji: '寛政', kana: 'かんせい', romaji: 'Kansei', start: 1789, last: 13 },
+      { key: 'kyowa', kanji: '享和', kana: 'きょうわ', romaji: 'Kyōwa', start: 1801, last: 4 },
+      { key: 'bunka', kanji: '文化', kana: 'ぶんか', romaji: 'Bunka', start: 1804, last: 15 },
+      { key: 'bunsei', kanji: '文政', kana: 'ぶんせい', romaji: 'Bunsei', start: 1818, last: 13 },
+      { key: 'tenpo', kanji: '天保', kana: 'てんぽう', romaji: 'Tenpō', start: 1830, last: 15 },
+      { key: 'koka', kanji: '弘化', kana: 'こうか', romaji: 'Kōka', start: 1844, last: 5 },
+      { key: 'kaei', kanji: '嘉永', kana: 'かえい', romaji: 'Kaei', start: 1848, last: 7 },
+      { key: 'ansei', kanji: '安政', kana: 'あんせい', romaji: 'Ansei', start: 1854, last: 7 },
+      { key: 'manen', kanji: '万延', kana: 'まんえん', romaji: "Man'en", start: 1860, last: 2 },
+      { key: 'bunkyu', kanji: '文久', kana: 'ぶんきゅう', romaji: 'Bunkyū', start: 1861, last: 4 },
+      { key: 'genji', kanji: '元治', kana: 'げんじ', romaji: 'Genji', start: 1864, last: 2 },
+      { key: 'keio', kanji: '慶応', kana: 'けいおう', romaji: 'Keiō', start: 1865, last: 4 }
+      ],
+      label: '江戸期の元号（慶長〜慶応）と相当する西暦の年。改元の年月日（旧暦）は出典の表のとおりで、ここでは年だけを使う',
+      source: '日本大百科全書（ニッポニカ）「日本年号一覧」（コトバンク）',
+      url: 'https://kotobank.jp/word/%E6%97%A5%E6%9C%AC%E5%B9%B4%E5%8F%B7%E4%B8%80%E8%A6%A7-1614547',
+      checked: '2026-10-11'
+    },
+
     // 明治5年12月3日を明治6年1月1日（1873-01-01）とし、太陽暦（グレゴリオ暦）に改めた
     gregorianAdoption: {
       value: '1873-01-01',
@@ -139,6 +187,29 @@
       source: 'Japanese Law Translation (Ministry of Justice)',
       url: 'https://www.japaneselawtranslation.go.jp/en/laws/view/4743/en',
       checked: '2026-10-01'
+    },
+
+    // --- 家族の年表（nenpyo/。2026-10-03 に e-Gov 法令 API で条文を取得して確認） ---
+    adultAge: {
+      value: 18,
+      label: '民法第4条（成年）「年齢十八歳をもって、成年とする。」',
+      source: 'e-Gov 法令検索「民法」第四条',
+      url: 'https://laws.e-gov.go.jp/law/129AC0000000089',
+      checked: '2026-10-03'
+    },
+    pensionAge: {
+      value: 65,
+      label: '国民年金法第26条（老齢基礎年金は六十五歳に達したときに支給。繰上げ・繰下げ、受給資格期間 10 年の条件あり）',
+      source: 'e-Gov 法令検索「国民年金法」第二十六条',
+      url: 'https://laws.e-gov.go.jp/law/334AC0000000141',
+      checked: '2026-10-03'
+    },
+    retirementAge: {
+      value: { min: 60, secure: 65 },
+      label: '高年齢者等の雇用の安定等に関する法律 第8条（定年は六十歳を下回ることができない）・第9条（六十五歳までの雇用確保措置）。定年の年齢と退職日は勤め先の就業規則で決まる',
+      source: 'e-Gov 法令検索「高年齢者等の雇用の安定等に関する法律」第八条・第九条',
+      url: 'https://laws.e-gov.go.jp/law/346AC0000000068',
+      checked: '2026-10-03'
     },
 
     // --- 厄年・年祝い（yakudoshi/）と回忌（kaiki/）。法令ではなく慣習なので、寺社・宗派の公式ページで確かめた「例」として持つ ---

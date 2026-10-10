@@ -31,6 +31,40 @@ function ymdObj(s) {
   return m ? { y: +m[1], m: +m[2], d: +m[3] } : null;
 }
 
+/**
+ * 明治より前（慶長〜慶応、1596〜1867 年）の年の対応（yorozu-plans K158）。改元の日は旧暦なので月日は直さない。
+ * 「慶応元年」「文久3年」（和暦）か「1850」「1850年」「1850-03-01」（西暦。月日は捨てる）。明治より前でなければ null（今までの日付の変換へ）
+ */
+function preMeijiYear(text) {
+  const p = Calc.parseInput(text);
+  if (!p) return null;
+  let y;
+  let eras;
+  const item = (era, year) => ({ key: era.key, kanji: era.kanji, year, text: Calc.formatEraYear(era, year) });
+  if (p.kind === 'wareki') {
+    const era = Calc.eraByKey(p.era);
+    if (!era || !era.preMeiji) return null;
+    const r = Calc.toSeireki(p.era, p.year, p.m, p.d);
+    if (!r.ok) return { ok: false, error: r.error, era: { key: era.key, kanji: era.kanji }, last: r.last ?? null };
+    y = r.y;
+    eras = Calc.preErasOfYear(y).map((x) => item(x.era, x.year));
+    // 慶応 4 年（1868）は明治元年（慶応4年1月1日にさかのぼって明治元年とした）
+    if (!eras.length) eras = [item(era, p.year), item(Calc.eraByKey('meiji'), 1)];
+  } else {
+    y = p.y;
+    eras = Calc.preErasOfYear(y).map((x) => item(x.era, x.year));
+    if (!eras.length) return null;
+  }
+  return {
+    ok: true,
+    yearOnly: true,
+    seirekiYear: y,
+    eras,
+    dateIgnored: Boolean(p.m),
+    note: '明治より前は改元の日が旧暦のため、年の対応だけです（旧暦の年末は西暦の翌年の 1〜2 月）。',
+  };
+}
+
 export const CALCS = [
   {
     name: 'nenmatsu', tool: 'calc_year_end_tax_adjustment', page: SITE + 'seido-keisan/nenmatsu/',
@@ -135,19 +169,22 @@ export const CALCS = [
     name: 'wareki', tool: 'convert_japanese_era', page: SITE + 'gengo/',
     title: '和暦と西暦の変換（元号）',
     description: {
-      ja: '「令和8年5月1日」「S60.4.1」「2026-05-01」などの日付を、西暦と和暦の両方にします（明治 6 年以降。改元の日は新しい元号）。',
-      en: 'Convert dates between Japanese era (Reiwa, Heisei, Showa, Taisho, Meiji) and the Western calendar, e.g. "令和8年5月1日", "S60.4.1" or "2026-05-01".',
+      ja: '「令和8年5月1日」「S60.4.1」「2026-05-01」などの日付を、西暦と和暦の両方にします（明治 6 年以降。改元の日は新しい元号）。明治より前（慶長〜慶応、1596〜1867 年）は「慶応元年」「1850」のような年だけを受け、年の対応だけを返します（改元の日が旧暦のため）。',
+      en: 'Convert dates between Japanese era (Reiwa, Heisei, Showa, Taisho, Meiji) and the Western calendar, e.g. "令和8年5月1日", "S60.4.1" or "2026-05-01". For years before the Meiji era (Keichō to Keiō, 1596–1867), such as "慶応元年" or "1850", only the year is converted, because eras changed on lunisolar-calendar dates.',
     },
-    params: { date: '日付の文字列（和暦か西暦）' },
+    params: { date: '日付の文字列（和暦か西暦）。明治より前は年だけ' },
     required: ['date'],
     run(input) {
-      const r = Calc.inputToDate(String(input.date || ''));
+      const text = String(input.date || '');
+      const pre = preMeijiYear(text);
+      if (pre) return pre;
+      const r = Calc.inputToDate(text);
       if (!r.ok) return r;
       const w = Calc.eraOf(r.date);
       return { ok: true, seireki: Calc.ymdStr(r.date), wareki: Calc.formatWareki(r.date), abbr: Calc.formatAbbr(r.date), era: w ? { key: w.era.key, kanji: w.era.kanji, year: w.year } : null, weekday: '日月火水木金土'[Calc.weekdayOf(r.date)] };
     },
     meta() {
-      return { source: GengoC.ERAS.map((e) => ({ label: e.source, url: e.url })).concat([{ label: GengoC.gregorianAdoption.source, url: GengoC.gregorianAdoption.url }]), checked: GengoC.ERAS.map((e) => e.checked).sort().at(-1), lib: lib('gengo', ['calc.js', 'constants.js']) };
+      return { source: GengoC.ERAS.map((e) => ({ label: e.source, url: e.url })).concat([{ label: GengoC.gregorianAdoption.source, url: GengoC.gregorianAdoption.url }, { label: GengoC.preMeiji.source, url: GengoC.preMeiji.url }]), checked: GengoC.ERAS.map((e) => e.checked).concat([GengoC.preMeiji.checked]).sort().at(-1), lib: lib('gengo', ['calc.js', 'constants.js']) };
     },
   },
   {

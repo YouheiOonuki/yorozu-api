@@ -1,11 +1,11 @@
 {
   "note": "vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない",
-  "synced_at": "2026-10-10",
+  "synced_at": "2026-10-11",
   "repos": {
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "9e6a921d82d89f55c6cf7f38e10dab7711a10ade",
+      "commit": "87285500f666641bfed1dddcc0dc29f43cb414f3",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "26575f5ffb65eef9aee39c6423a3f38c551f07b9",
@@ -21,13 +21,14 @@
         "lib/kyuyo-table-2025.js": "a1bd4aaae2a38c9f3af14243040fafd4de7abd10",
         "lib/kyuyo-table-2026.js": "15783b2621163da6c1711016d3c7fdd484df493a",
         "lib/juminzei.js": "220a793e643a31caae138fa06d3ab3a12e42dea9",
-        "lib/juminzei-values.js": "cefc504b1cbc7195a6951fbdeac73ce822145c6e"
+        "lib/juminzei-values.js": "cefc504b1cbc7195a6951fbdeac73ce822145c6e",
+        "lib/kaitei-values.js": "3a0887694d0298d9729718ced68a5342dc2bb808"
       }
     },
     "gengo": {
       "url": "https://github.com/YouheiOonuki/gengo",
       "ref": "main",
-      "commit": "c01d59c6e17506e4fe034fb216593c1d0da2d266",
+      "commit": "0cb3b9daa4a768c4aadb7815bee4e7037763ac4f",
       "files": {
         "calc.js": "aee6e245c9464d2929d6acfcf52e90b5a33d03c2",
         "constants.js": "d238e82078254991478e4601e2c99ebfe4331300"
@@ -36,7 +37,7 @@
     "hoshizora-night": {
       "url": "https://github.com/YouheiOonuki/hoshizora-night",
       "ref": "main",
-      "commit": "9e3645fd56ff2fb5c650d7fb3403accce4946f89",
+      "commit": "db342226f72a01e0c11ae8e55f4b2fd85385e150",
       "files": {
         "engine/astro.js": "0eff2875f9f6e3c18238925c0438424cf71b9b23",
         "engine/data.js": "5ab1af1d52e37f1ecaa49b503f820072a0086794",

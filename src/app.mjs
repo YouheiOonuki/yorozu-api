@@ -5,11 +5,13 @@
 //   POST /v1/<計算>  JSON の本文   同じ（入力を URL に載せたくないとき）
 //   GET  /v1/kogaku/categories     高額療養費の所得区分の表
 //   GET  /v1/shienkin/model        子ども・子育て支援金の国のモデル試算
+//   GET  /v1/now                   次の改定（今日より後の最初の施行日。制度の改定カレンダーから。K141）
 //   POST /mcp                      MCP（Streamable HTTP、JSON の応答だけ。状態を持たない）
 // 決まり: 認証なし・入力を保存しない（console.log もしない。数は Cloudflare のダッシュボードの要求数だけ）・
 //   どの返り値にも meta（出典・確認日・免責の文・写した元の commit）を付ける
 import { CALCS, DISCLAIMER } from './calcs.mjs';
 import SOURCES from '../vendor/SOURCES.json' with { type: 'json' };
+import { nextKaitei, todayJst } from './now.mjs';
 
 export const VERSION = '0.1.0';
 const BY_NAME = Object.fromEntries(CALCS.map((c) => [c.name, c]));
@@ -145,6 +147,12 @@ export const handler = {
 
     if (request.method !== 'GET' && request.method !== 'POST') return json({ error: 'GET か POST / GET or POST' }, 405);
     if (path === '/' || path === '/v1') return json(index(base));
+    // 次の改定（K141）。?date=YYYY-MM-DD はテストと確かめ用（無ければ日本時間の今日）。トップが毎回読むので 1 時間だけ端に置いてよい
+    if (path === '/v1/now') {
+      const d = url.searchParams.get('date');
+      const today = d && /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : todayJst();
+      return new Response(JSON.stringify(nextKaitei(today), null, 2) + '\n', { headers: { ...HEADERS, 'cache-control': d ? 'no-store' : 'public, max-age=3600' } });
+    }
     const m = /^\/v1\/([a-z-]+)(?:\/([a-z]+))?$/.exec(path);
     const calc = m && BY_NAME[m[1]];
     if (!calc) return json({ error: 'not found', calcs: base + '/v1' }, 404);

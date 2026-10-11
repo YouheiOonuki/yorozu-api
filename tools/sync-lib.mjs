@@ -22,6 +22,7 @@ export const FILES = {
     'lib/invoice.js', 'lib/invoice-values.js',
     'lib/nenmatsu.js', 'lib/tax2026.js', 'lib/kyuyo-table-2025.js', 'lib/kyuyo-table-2026.js',
     'lib/juminzei.js', 'lib/juminzei-values.js',
+    'lib/kaitei-values.js',   // /v1/now の次の改定（K141）
   ],
   gengo: ['calc.js', 'constants.js'],
   // 今夜の星空（K156）: 位置の計算・星座・都道府県庁・共有 URL。look.js は ../engine/astro.js を読むので並びのまま写す
@@ -34,7 +35,7 @@ export function blobSha(buf) {
 }
 
 function sync() {
-  const ref = arg('ref', 'origin/main');
+  const ref = arg('ref', 'main');   // 正本は PC の main（D277。GitHub は複製の置き場で、止まっている間は古い）
   const out = { note: 'vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない', synced_at: new Date().toISOString().slice(0, 10), repos: {} };
   for (const [repo, files] of Object.entries(FILES)) {
     const dir = resolve(arg(repo, join(root, '..', repo)));

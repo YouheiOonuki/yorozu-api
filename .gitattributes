@@ -1,0 +1,2 @@
+# vendor/ はサイトのリポジトリから写したもの。tools/sync-lib.mjs が blob の SHA-1 で元と突き合わせるので、改行を変えずにそのまま持つ（2026-10-11、K141 で CRLF に書き戻されて食い違った）
+vendor/** -text

@@ -163,6 +163,9 @@ export const handler = {
       if (!fn) return json({ error: 'not found' }, 404);
       return json({ result: fn(input), meta: meta(calc, input) });
     }
-    try { return json(runCalc(calc, input)); } catch { return json({ error: '計算できませんでした / calculation failed', meta: meta(calc, input) }, 400); }
+    let out;
+    try { out = runCalc(calc, input); } catch { return json({ error: '計算できませんでした / calculation failed', meta: meta(calc, input) }, 400); }
+    // 入力の誤り（run が { ok: false, error: 欄の名前 } を返した）は 400。中身は 200 のときと同じ形（yorozu-plans ROADMAP 7.69.1）
+    return json(out, out.result && out.result.ok === false ? 400 : 200);
   },
 };

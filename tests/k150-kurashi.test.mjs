@@ -160,3 +160,29 @@ test('/v1 の一覧と MCP の tools/list に 3 つがある（英語のツー�
   const out = (await rpc({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'calc_mortgage_repayment', arguments: { principal: 30000000, years: 35, rate: 1.0 } } })).result.structuredContent;
   assert.equal(Math.round(out.result.payments[0].payment), 84686);
 });
+
+// denki-kaikae（7.70 の判断 6）: 元のページの calc.test.js の「買い替え」と同じ入力・同じ値
+test('denki-kaikae 1: W × 時間方式 1000W → 500W・1 時間・30 日・単価 31 円・18,600 円 → 年 180kWh・5,580 円の差、3.33 年（calc.test.js「買い替え（W × 時間方式）」）', async () => {
+  const { result: r } = await get('/v1/denki-kaikae?method=wh&oldWatt=1000&newWatt=500&hours=1&days=30&price=18600&unitPrice=31');
+  assert.equal(r.ok, true);
+  near(r.kwhSavingYear, 180);
+  near(r.savingYear, 5580);
+  near(r.years, 18600 / 5580);
+});
+test('denki-kaikae 2: 年間 500kWh → 300kWh・単価 31 円・10 万円 → 年 6,200 円の差（calc.test.js「単価を変えると…」の ra）', async () => {
+  const { result: r } = await get('/v1/denki-kaikae?method=annual&oldAnnualKwh=500&newAnnualKwh=300&price=100000&unitPrice=31');
+  near(r.savingYear, 200 * 31);
+  near(r.years, 100000 / 6200);
+});
+test('denki-kaikae 3: 買い替え先のほうが電気を食うときは元が取れない（years は null。calc.test.js「買い替え（W × 時間方式）」の 2 つ目）', async () => {
+  const { result: r } = await get('/v1/denki-kaikae?method=wh&oldWatt=500&newWatt=600&hours=1&days=30&price=1&unitPrice=31');
+  assert.equal(r.years, null);
+  assert.ok(r.savingYear < 0);
+});
+test('denki-kaikae: 方式に要る欄が無いと 400 と欄の名前', async () => {
+  for (const [q, f] of [['method=wh&oldWatt=1000', 'newWatt'], ['method=annual&oldAnnualKwh=500', 'newAnnualKwh'], ['method=xx', 'method']]) {
+    const res = await W.fetch(new Request('http://localhost/v1/denki-kaikae?' + q));
+    assert.equal(res.status, 400);
+    assert.equal((await res.json()).result.error, f);
+  }
+});

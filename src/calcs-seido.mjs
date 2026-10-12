@@ -55,8 +55,8 @@ export const CALCS_SEIDO = [
     name: 'iryohi', tool: 'calc_medical_expense_deduction', page: SITE + 'seido-keisan/iryohi/',
     title: '医療費控除（控除額と戻る税金の目安）',
     description: {
-      ja: '支払った医療費から医療費控除の額（またはセルフメディケーション税制の額）を、国税庁の明細書の計算欄の順で出し、戻る所得税と住民税の減額の目安を計算します。',
-      en: 'Japan medical expense deduction: the deduction (or the self-medication tax deduction) in the order of the National Tax Agency statement form, with an estimate of the income tax refund and the resident tax reduction.',
+      ja: '支払った医療費から医療費控除の額（またはセルフメディケーション税制の額）を、国税庁の明細書の計算欄の順で出し、戻る所得税と住民税の減額の目安を計算します。給与の収入（income）か、総所得金額等（mode=shotoku と shotoku）のどちらかが要ります。',
+      en: 'Japan medical expense deduction: the deduction (or the self-medication tax deduction) in the order of the National Tax Agency statement form, with an estimate of the income tax refund and the resident tax reduction. Either the salary income (income) or the total income (mode=shotoku with shotoku) is needed.',
     },
     params: {
       hiyo: '支払った医療費の合計（円）', hoten: '保険金などで補てんされる額（円）', mode: 'kyuyo（給与の収入から）か shotoku（総所得金額等を直接）',
@@ -65,7 +65,8 @@ export const CALCS_SEIDO = [
       'self.use': 'セルフメディケーション税制も比べる（true/false）', 'self.torikumi': '健康診断などの取組をしている（true/false）',
       'self.amount': '対象医薬品の購入費（円）', 'self.hoten': '対象医薬品の補てん額（円）', jumin: '住民税の減額も出す（true/false）',
     },
-    required: ['hiyo', 'income'],
+    // 給与の収入（income）か総所得金額等（mode=shotoku と shotoku）の択一なので、必ず要るのは hiyo だけ（D343）
+    required: ['hiyo'],
     run(input) {
       const r = Iryohi.calc(input);
       if (r.ready) return r;
@@ -85,15 +86,16 @@ export const CALCS_SEIDO = [
     name: 'koko', tool: 'calc_high_school_tuition_support', page: SITE + 'seido-keisan/koko-mushoka/',
     title: '高校の授業料（就学支援金と都道府県の上乗せのあとの自己負担）',
     description: {
-      ja: '高校の授業料から国の就学支援金と、東京都・大阪府・神奈川県・埼玉県・愛知県・兵庫県の私立の上乗せを引いた自己負担を、学年ごとに計算して合計します。',
-      en: 'Japan high school tuition: the out-of-pocket amount after the national tuition support and the added support of Tokyo, Osaka, Kanagawa, Saitama, Aichi and Hyogo for private schools, calculated for each school year and summed.',
+      ja: '高校の授業料から国の就学支援金と、東京都・大阪府・神奈川県・埼玉県・愛知県・兵庫県の私立の上乗せを引いた自己負担を、学年ごとに計算して合計します。授業料は、年額（fee）か、単位制の 1 単位の授業料と単位数（feeMode=unit と unitFee・units）のどちらかで入れます。',
+      en: 'Japan high school tuition: the out-of-pocket amount after the national tuition support and the added support of Tokyo, Osaka, Kanagawa, Saitama, Aichi and Hyogo for private schools, calculated for each school year and summed. Enter the tuition either as a yearly amount (fee) or, for credit-based schools, as the fee per credit and the number of credits (feeMode=unit with unitFee and units).',
     },
     params: {
       fee: '授業料（年額、円）。単位制は feeMode=unit と unitFee・units', setchi: 'shiritsu・koritsu・kokuritsu', type: 'zen・tei・tsu・toku・kosen・senshu・senshu_tsu',
       feeMode: 'year か unit（単位制）', unitFee: '1 単位の授業料（円）', units: '年の単位数', pref: '都道府県の名前（「東京都」など）', years: '3 か 4',
       shisetsu: '施設整備費など（年額、円）', nyugaku: '入学金（円）', status: 'shin か gai（新制度の対象外）',
     },
-    required: ['fee'],
+    // 年額（fee）か単位制（feeMode=unit と unitFee・units）の択一なので、必ず要る欄は無い（D343）
+    required: [],
     run(input) {
       const r = Koko.calc(input);
       if (r.ready) return r;
@@ -106,8 +108,8 @@ export const CALCS_SEIDO = [
     name: 'dattai', tool: 'calc_pension_lump_sum_withdrawal', page: SITE + 'seido-keisan/dattai-ichiji/',
     title: '脱退一時金（外国人の厚生年金・国民年金）',
     description: {
-      ja: '日本を出る外国人の脱退一時金の額（厚生年金・国民年金）と、源泉徴収された額、退職所得の選択課税での還付の目安、請求の期限を、日本年金機構の表の順で計算します。',
-      en: 'Lump-sum withdrawal payment for foreign residents leaving Japan: the amount from the employees\' pension and the national pension, the tax withheld, an estimate of the refund through the retirement income election, and the claim deadline, following the Japan Pension Service tables.',
+      ja: '日本を出る外国人の脱退一時金の額（厚生年金・国民年金）と、源泉徴収された額、退職所得の選択課税での還付の目安、請求の期限を、日本年金機構の表の順で計算します。厚生年金の月数（ep.months）か国民年金の月数（np.months）のどちらかが要ります。',
+      en: 'Lump-sum withdrawal payment for foreign residents leaving Japan: the amount from the employees\' pension and the national pension, the tax withheld, an estimate of the refund through the retirement income election, and the claim deadline, following the Japan Pension Service tables. Either the months of employees\' pension (ep.months) or the months of national pension (np.months) is needed.',
     },
     params: {
       'ep.months': '厚生年金の被保険者期間の月数', 'ep.last': '厚生年金の最終月（YYYY-MM）', 'ep.avg': '平均標準報酬額（円。分かるとき）', 'ep.salary': '平均の月給（円。avg の代わり）',

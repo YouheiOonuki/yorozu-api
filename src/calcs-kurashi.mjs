@@ -75,6 +75,34 @@ export const CALCS_KURASHI = [
     meta() { return { source: src([DenkiK.SOURCES[DenkiK.UNIT_PRICE.source]]), checked: DenkiK.CHECKED, lib: lib('denki-dai', ['calc.js', 'constants.js']) }; },
   },
   {
+    // K150 の残り（yorozu-plans ROADMAP 7.70 の判断 6）: 画面の「買い替え比較」
+    name: 'denki-kaikae', tool: 'calc_appliance_replacement_saving', page: SITE + 'denki-dai/',
+    title: '家電の買い替え（年間の電気代の差と、元が取れる年数）',
+    description: {
+      ja: '今の家電と買い替え先の消費電力と使う時間（method=wh）、または年間消費電力量（method=annual）のどちらかと、電気料金の単価から、年間の電力量と電気代の差を計算します。購入価格を入れると、元が取れるまでの年数も返します（差が無いか増えるときは null）。単価の既定は出典の目安単価です。',
+      en: 'Replacing a home appliance: the yearly difference in energy use and electricity cost between the current and the new appliance, from either their power and hours of use (method=wh) or their annual consumption (method=annual), and the unit price. With the purchase price it also returns the years to pay it back (null when there is no saving or the cost goes up). The default unit price is the guide price in the source.',
+    },
+    params: {
+      method: 'wh（消費電力 W × 時間。既定）か annual（年間消費電力量）', oldWatt: '今の家電の消費電力（W。wh のとき）', newWatt: '買い替え先の消費電力（W。wh のとき）',
+      hours: '1 日の使用時間（時間。wh のとき）', days: '1 か月の使用日数（wh のとき）', oldAnnualKwh: '今の家電の年間消費電力量（kWh。annual のとき）',
+      newAnnualKwh: '買い替え先の年間消費電力量（kWh。annual のとき）', qty: '台数（既定 1）', price: '購入価格（円。元が取れる年数に使う）', unitPrice: '電気料金の単価（円/kWh。既定は出典の目安単価）',
+    },
+    // method で要る欄が変わるので、必ず要る欄は無い（D343。どちらかは description に書いた）
+    required: [],
+    run(input) {
+      const method = input.method === 'annual' ? 'annual' : (input.method === undefined || input.method === '' || input.method === 'wh' ? 'wh' : null);
+      if (!method) return bad('method', 'method は wh か annual');
+      const need = method === 'wh' ? ['oldWatt', 'newWatt', 'hours', 'days'] : ['oldAnnualKwh', 'newAnnualKwh'];
+      for (const k of need) if (!(num(input[k], NaN) >= 0)) return bad(k, k + ' を 0 以上の数字で（method=' + method + '）');
+      const unitPrice = num(input.unitPrice, DenkiK.UNIT_PRICE.value);
+      if (!(unitPrice > 0)) return bad('unitPrice', '単価は 0 より大きい数字で（円/kWh）');
+      const p = { method, unitPrice, price: num(input.price, 0), qty: num(input.qty, 1) };
+      for (const k of need) p[k] = num(input[k], 0);
+      return { ok: true, method, unitPrice, ...DenkiCalc.replacement(p) };
+    },
+    meta() { return { source: src([DenkiK.SOURCES[DenkiK.UNIT_PRICE.source]]), checked: DenkiK.CHECKED, lib: lib('denki-dai', ['calc.js', 'constants.js']) }; },
+  },
+  {
     name: 'shaho', tool: 'calc_social_insurance_eligibility', page: SITE + 'shaho-check/',
     title: '社会保険（厚生年金・健康保険）の加入判定',
     description: {

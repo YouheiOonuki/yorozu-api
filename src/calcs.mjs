@@ -16,21 +16,13 @@ import Juminzei from '../vendor/seido-keisan/lib/juminzei.js';
 import JuminzeiV from '../vendor/seido-keisan/lib/juminzei-values.js';
 import Calc from '../vendor/gengo/calc.js';
 import GengoC from '../vendor/gengo/constants.js';
-import SOURCES from '../vendor/SOURCES.json' with { type: 'json' };
 import { tonight } from './tonight.mjs';
 
-const SITE = 'https://yorozu-craft.com/';
-const src = (list) => list.map((s) => ({ label: s.label, url: s.url }));
-const uniqBy = (a, k) => a.filter((x, i) => a.findIndex((y) => y[k] === x[k]) === i);
-// 日本時間の今月（YYYY-MM）。lib の「今月の表」の決め方に渡す
-export const thisMonth = () => new Date(Date.now() + 9 * 3600000).toISOString().slice(0, 7);
-const lib = (repo, files) => ({ repo: SOURCES.repos[repo].url, commit: SOURCES.repos[repo].commit, files });
-
-const num = (v, d) => (v === undefined || v === '' || v === null || !isFinite(Number(v)) ? d : Number(v));
-function ymdObj(s) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ''));
-  return m ? { y: +m[1], m: +m[2], d: +m[3] } : null;
-}
+import { SITE, src, uniqBy, thisMonth, lib, num, ymdObj } from './calc-util.mjs';
+import { CALCS_SEIDO } from './calcs-seido.mjs';
+import { CALCS_GAKKO } from './calcs-gakko.mjs';
+import { CALCS_KURASHI } from './calcs-kurashi.mjs';
+export { thisMonth };
 
 /**
  * 明治より前（慶長〜慶応、1596〜1867 年）の年の対応（yorozu-plans K158）。改元の日は旧暦なので月日は直さない。
@@ -234,6 +226,10 @@ export const CALCS = [
       };
     },
   },
+  // K150（yorozu-plans ROADMAP 7.69.1）: 残りの計算機。グループごとのファイルに置く
+  ...CALCS_SEIDO,
+  ...CALCS_GAKKO,
+  ...CALCS_KURASHI,
 ];
 
 export const DISCLAIMER = {

@@ -2,6 +2,7 @@
 //   node tools/sync-lib.mjs                       既定（../seido-keisan・../gengo の origin/main）から写す
 //   node tools/sync-lib.mjs --seido-keisan=/path/to/seido-keisan --gengo=/path/to/gengo --ref=origin/main
 //   node tools/sync-lib.mjs --check               vendor/ の中身が SOURCES.json の git の blob と同じか（手で直していないか）だけを確かめる
+//   node tools/sync-lib.mjs --drift               写した commit のあと、元のリポジトリの main で lib が変わっていないか（警告だけ。K150 D338）
 // vendor/ は手で直さない。計算を直すときはサイトのリポジトリで直してから、これを走らせ直す（手で分岐しない）。
 // 写した元の commit と各ファイルの git の blob の SHA-1 を vendor/SOURCES.json に記録する（GitHub の同じ commit と突き合わせられる）
 import { execFileSync } from 'node:child_process';
@@ -23,8 +24,22 @@ export const FILES = {
     'lib/nenmatsu.js', 'lib/tax2026.js', 'lib/kyuyo-table-2025.js', 'lib/kyuyo-table-2026.js',
     'lib/juminzei.js', 'lib/juminzei-values.js',
     'lib/kaitei-values.js',   // /v1/now の次の改定（K141）
+    // K150（7.69.1）: 残りの計算機
+    'lib/ikukyu.js',
+    'lib/iryohi.js', 'lib/iryohi-values.js',
+    'lib/koko.js', 'lib/koko-values.js',
+    'lib/pension-refund.js', 'lib/dattai-values.js',
+    'lib/kaitei.js',
+    'lib/take-home.js', 'lib/take-home-values.js',
+    'lib/yobosesshu.js', 'lib/yobosesshu-values.js',
   ],
   gengo: ['calc.js', 'constants.js'],
+  // K150: 学校の計算
+  'gakko-keisan': ['lib/common.js', 'lib/naishin.js', 'lib/naishin-values.js', 'lib/shusseki.js', 'lib/shusseki-values.js', 'lib/atonannichi.js', 'lib/atonannichi-values.js', 'lib/hensachi.js'],
+  // K150: くらしの計算
+  'loan-sim': ['calc.js', 'constants.js'],
+  'denki-dai': ['calc.js', 'constants.js'],
+  'shaho-check': ['judge.js'],
   // 今夜の星空（K156）: 位置の計算・星座・都道府県庁・共有 URL。look.js は ../engine/astro.js を読むので並びのまま写す
   'hoshizora-night': ['engine/astro.js', 'engine/data.js', 'render/prefectures.js', 'render/look.js'],
 };
@@ -72,8 +87,33 @@ export function check() {
   return bad;
 }
 
+/**
+ * 写した commit と、元のリポジトリの今の main の差（yorozu-plans ROADMAP 7.69.1 D338）。
+ * サイトの lib や値を直したのに API の写しが古いまま、を見つける。返りは [{ repo, file, pinned, now }]（差が無ければ空）
+ */
+export function drift() {
+  const S = JSON.parse(readFileSync(join(root, 'vendor', 'SOURCES.json'), 'utf8'));
+  const out = [];
+  for (const [repo, files] of Object.entries(FILES)) {
+    const rec = S.repos[repo];
+    const dir = resolve(arg(repo, join(root, '..', repo)));
+    if (!rec || !existsSync(dir)) continue;
+    for (const f of files) {
+      let now = '';
+      try { now = execFileSync('git', ['-C', dir, 'rev-parse', 'main:' + f]).toString().trim(); } catch { now = '(main に無い)'; }
+      if (now !== rec.files[f]) out.push({ repo, file: f, pinned: rec.commit.slice(0, 7), now: now.slice(0, 7) });
+    }
+  }
+  return out;
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  if (process.argv.includes('--check')) {
+  if (process.argv.includes('--drift')) {
+    // 警告だけ（終了コード 0）。差があれば node tools/sync-lib.mjs で写し直し、テストを回して deploy する
+    const d = drift();
+    for (const x of d) console.log(`警告: ${x.repo}/${x.file} が main で変わっている（写したのは ${x.pinned}）。node tools/sync-lib.mjs で写し直す`);
+    if (!d.length) console.log('OK: 写した lib は元のリポジトリの main と同じ');
+  } else if (process.argv.includes('--check')) {
     const bad = check();
     for (const b of bad) console.error(b);
     if (bad.length) process.exit(1);

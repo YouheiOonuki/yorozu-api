@@ -29,16 +29,25 @@ test('src/ は計算をしない: lib の関数を呼ぶだけ（税率・上限
   for (const n of ['270300', '0.004', '0.007', '0.23', '102.1', '7.8', '22/78']) assert.ok(!s.includes(n), n);
 });
 
-test('/v1: 計算の一覧（9 つ。今夜の星空 K156 を足した）、各計算の返り値に meta（出典・確認日・免責の文・写した元の commit）', async () => {
+test('/v1: 計算の一覧（23。今夜の星空 K156、K150 の 14 を足した）、各計算の返り値に meta（出典・確認日・免責の文・写した元の commit）', async () => {
   const r = await call('/v1');
   assert.equal(r.status, 200);
   const j = await r.json();
-  assert.deepEqual(j.calcs.map((c) => c.name), ['nenmatsu', 'juminzei', 'kogaku', 'nenkin-kuriage', 'shienkin', 'invoice', 'wareki', 'gakunen', 'tonight']);
+  assert.deepEqual(j.calcs.map((c) => c.name), ['nenmatsu', 'juminzei', 'kogaku', 'nenkin-kuriage', 'shienkin', 'invoice', 'wareki', 'gakunen', 'tonight',
+    'ikukyu', 'iryohi', 'koko', 'dattai', 'kaitei', 'take-home', 'yobosesshu', 'naishin', 'shusseki', 'atonannichi', 'hensachi', 'loan', 'denki', 'shaho']);
+  const G4 = ['kokugo', 'shakai', 'sugaku', 'rika', 'eigo', 'ongaku', 'bijutsu', 'hotai', 'gika'].map((k) => 'g.' + k + '=4').join('&');
   const samples = {
     nenmatsu: 'income=5000000&withheld=100000&shakai=700000', juminzei: 'income=5000000&shakai=700000',
     kogaku: 'period=r8&cat=u&rows.0.cost=1000000', 'nenkin-kuriage': 'birth=1962-04-02&kiso=1200000&age=62',
     shienkin: 'kind=kaisha&mode=hyojun&amount=300000', invoice: 'year=2027&uriage=7700000',
     wareki: 'date=' + encodeURIComponent('令和8年5月1日'), gakunen: 'birth=2019-04-02&fy=2026', tonight: 'pref=' + encodeURIComponent('大阪') + '&date=2026-10-11',
+    // K150（7.69.1）
+    ikukyu: 'role=father&wage6=1800000&dueDate=2027-01-10&leaveStart=2027-01-10&leaveEnd=2027-06-30',
+    iryohi: 'hiyo=500000&hoten=200000&mode=kyuyo&income=7140000&kojo=3269196', koko: 'setchi=shiritsu&type=zen&fee=480000&pref=' + encodeURIComponent('千葉県'),
+    dattai: 'ep.months=30&ep.last=2026-08&ep.avg=300000', kaitei: 'date=2026-09-25', 'take-home': 'amount=300000', yobosesshu: 'birth=2026-05-10&today=2026-10-03',
+    naishin: 'pref=tokyo&' + G4, shusseki: 'total=70&ratio=' + encodeURIComponent('2/3') + '&absent=10', atonannichi: 'date=2026-12-25&today=2026-09-25', hensachi: 'score=70&mean=60&sd=10',
+    loan: 'principal=30000000&years=35&rate=1.0', denki: 'items.0.method=wh&items.0.watt=1000&items.0.hours=1&items.0.days=30',
+    shaho: 'weeklyHours=25&employer=' + encodeURIComponent('51+') + '&date=2026-10-01',
   };
   for (const c of j.calcs) {
     const res = await call('/v1/' + c.name + '?' + samples[c.name]);
@@ -46,7 +55,8 @@ test('/v1: 計算の一覧（9 つ。今夜の星空 K156 を足した）、各�
     const b = await res.json();
     assert.ok(b.result, c.name);
     assert.ok(b.meta.source.length && b.meta.source.every((s) => s.label && /^https:\/\//.test(s.url)), c.name + ' の出典');
-    assert.match(b.meta.checked, /^\d{4}-\d{2}-\d{2}$/, c.name);
+    // 確認日: 日付で変わる値を持たない式だけの計算（偏差値）は null（出典は式の解説）。ほかは日付
+    if (c.name === 'hensachi') assert.equal(b.meta.checked, null); else assert.match(b.meta.checked, /^\d{4}-\d{2}-\d{2}$/, c.name);
     assert.match(b.meta.disclaimer, /目安/, c.name);
     assert.match(b.meta.disclaimer, /入力は保存していません/, c.name);
     assert.match(b.meta.lib.commit, /^[0-9a-f]{40}$/, c.name);

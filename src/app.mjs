@@ -49,7 +49,13 @@ export function parseQuery(params) {
   return out;
 }
 
+/**
+ * required（MCP の schema と同じ）の欄が入力に無ければ、計算せずに入力の誤りを返す（yorozu-plans 7.70 D343）。
+ * 前は 9 本のうち 7 本が、必須の欄が無くても 0 などで計算して 200 を返していた（schema と動きが食い違っていた）
+ */
 export function runCalc(calc, input) {
+  const miss = (calc.required || []).find((k) => input == null || input[k] === undefined || input[k] === null || input[k] === '');
+  if (miss) return { result: { ok: false, error: miss, message: miss + ' が要ります / ' + miss + ' is required' }, meta: meta(calc, input) };
   return { result: calc.run(input), meta: meta(calc, input) };
 }
 

@@ -29,12 +29,12 @@ test('src/ は計算をしない: lib の関数を呼ぶだけ（税率・上限
   for (const n of ['270300', '0.004', '0.007', '0.23', '102.1', '7.8', '22/78']) assert.ok(!s.includes(n), n);
 });
 
-test('/v1: 計算の一覧（23。今夜の星空 K156、K150 の 14 を足した）、各計算の返り値に meta（出典・確認日・免責の文・写した元の commit）', async () => {
+test('/v1: 計算の一覧（24。今夜の星空 K156、K150 の 15 を足した）、各計算の返り値に meta（出典・確認日・免責の文・写した元の commit）', async () => {
   const r = await call('/v1');
   assert.equal(r.status, 200);
   const j = await r.json();
   assert.deepEqual(j.calcs.map((c) => c.name), ['nenmatsu', 'juminzei', 'kogaku', 'nenkin-kuriage', 'shienkin', 'invoice', 'wareki', 'gakunen', 'tonight',
-    'ikukyu', 'iryohi', 'koko', 'dattai', 'kaitei', 'take-home', 'yobosesshu', 'naishin', 'shusseki', 'atonannichi', 'hensachi', 'loan', 'denki', 'shaho']);
+    'ikukyu', 'iryohi', 'koko', 'dattai', 'kaitei', 'take-home', 'yobosesshu', 'naishin', 'shusseki', 'atonannichi', 'hensachi', 'loan', 'denki', 'denki-kaikae', 'shaho']);
   const G4 = ['kokugo', 'shakai', 'sugaku', 'rika', 'eigo', 'ongaku', 'bijutsu', 'hotai', 'gika'].map((k) => 'g.' + k + '=4').join('&');
   const samples = {
     nenmatsu: 'income=5000000&withheld=100000&shakai=700000', juminzei: 'income=5000000&shakai=700000',
@@ -48,7 +48,23 @@ test('/v1: 計算の一覧（23。今夜の星空 K156、K150 の 14 を足し�
     naishin: 'pref=tokyo&' + G4, shusseki: 'total=70&ratio=' + encodeURIComponent('2/3') + '&absent=10', atonannichi: 'date=2026-12-25&today=2026-09-25', hensachi: 'score=70&mean=60&sd=10',
     loan: 'principal=30000000&years=35&rate=1.0', denki: 'items.0.method=wh&items.0.watt=1000&items.0.hours=1&items.0.days=30',
     shaho: 'weeklyHours=25&employer=' + encodeURIComponent('51+') + '&date=2026-10-01',
+    'denki-kaikae': 'method=wh&oldWatt=1000&newWatt=500&hours=1&days=30&price=18600',
   };
+  // MCP の required は「必ず要る欄」だけ（yorozu-plans 7.70 D343）: 上の入力から required の欄を 1 つ抜くと 400（入力の誤り）
+  for (const c of j.calcs) {
+    for (const k of c.required) {
+      const q = new URLSearchParams(samples[c.name]);
+      for (const key of [...q.keys()]) if (key === k || key.startsWith(k + '.')) q.delete(key);
+      const res = await call('/v1/' + c.name + '?' + q.toString());
+      assert.equal(res.status, 400, c.name + ' から ' + k + ' を抜いたら 400');
+    }
+  }
+  // 択一の欄は required に入れない（どちらか一方は description に書く）
+  const byName = Object.fromEntries(j.calcs.map((c) => [c.name, c]));
+  assert.deepEqual(byName.iryohi.required, ['hiyo']);
+  assert.deepEqual(byName.koko.required, []);
+  assert.deepEqual(byName.dattai.required, []);
+  for (const n of ['iryohi', 'koko', 'dattai', 'denki-kaikae']) assert.match(byName[n].description.ja, /どちらか/, n + ' の説明に択一');
   for (const c of j.calcs) {
     const res = await call('/v1/' + c.name + '?' + samples[c.name]);
     assert.equal(res.status, 200, c.name);

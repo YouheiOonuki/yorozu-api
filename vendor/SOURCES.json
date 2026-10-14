@@ -1,6 +1,6 @@
 {
   "note": "vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない",
-  "synced_at": "2026-10-12",
+  "synced_at": "2026-10-14",
   "repos": {
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
@@ -90,10 +90,10 @@
     "hoshizora-night": {
       "url": "https://github.com/YouheiOonuki/hoshizora-night",
       "ref": "main",
-      "commit": "db342226f72a01e0c11ae8e55f4b2fd85385e150",
+      "commit": "94deca1296545ada4f170bc036c6bf9850597d01",
       "files": {
-        "engine/astro.js": "0eff2875f9f6e3c18238925c0438424cf71b9b23",
-        "engine/data.js": "5ab1af1d52e37f1ecaa49b503f820072a0086794",
+        "engine/astro.js": "42afab289bcee37631e1dee31cb4b98a07302e98",
+        "engine/data.js": "50a7787bb11377c33c9d37f72e57da32c74fb058",
         "render/prefectures.js": "2da7547b67dd3d168c0bbe5a0cdec1175bc720e4",
         "render/look.js": "d3c6a593d3459d951dd070c5825146b27f24e501"
       }

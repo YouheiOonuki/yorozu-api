@@ -1,6 +1,6 @@
 // 計算の写し: サイトのリポジトリの lib/*.js を、指定の commit からそのまま vendor/ に写す（yorozu-plans ROADMAP 7.17 の K134）
-//   node tools/sync-lib.mjs                       既定（../seido-keisan・../gengo の origin/main）から写す
-//   node tools/sync-lib.mjs --seido-keisan=/path/to/seido-keisan --gengo=/path/to/gengo --ref=origin/main
+//   node tools/sync-lib.mjs                       既定（隣の作業用クローン ../seido-keisan など の main。正本は PC、D349）から写す
+//   node tools/sync-lib.mjs --seido-keisan=/path/to/seido-keisan --gengo=/path/to/gengo --ref=<commit>
 //   node tools/sync-lib.mjs --check               vendor/ の中身が SOURCES.json の git の blob と同じか（手で直していないか）だけを確かめる
 //   node tools/sync-lib.mjs --drift               写した commit のあと、元のリポジトリの main で lib が変わっていないか（警告だけ。K150 D338）
 // vendor/ は手で直さない。計算を直すときはサイトのリポジトリで直してから、これを走らせ直す（手で分岐しない）。

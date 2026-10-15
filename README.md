@@ -48,6 +48,16 @@ npm test
 4. 出てきた URL（`https://yorozu-api.<サブドメイン>.workers.dev`）で `API_BASE=… node --test tests/acceptance.test.mjs` を 1 回
 5. Claude（設定 → コネクタ → カスタムコネクタを追加 → URL に `…/mcp`）か ChatGPT（開発者モードのコネクタ）から 1 回呼び、`calc_high_cost_medical_expense`（period r8・cat u・医療費 100 万円・3 割）が 92,940 円を返すことを見る
 
+## オーナーの手順（MCP の登録簿に載せる。K190）
+
+登録簿（registry.modelcontextprotocol.io）の名前空間 `io.github.YouheiOonuki` は、オーナーの GitHub の認証が要ります。載せる中身は `server.json`（remote だけ。npm には出さない）で、`tests/k190.test.mjs` が `/v1` の index・MCP の tools/list と食い違わないことを確かめています。手順は登録簿の公式の Quickstart（2026-10-16 確認）のとおりです。
+
+1. `mcp-publisher` を取る: 公式の Releases の `mcp-publisher_windows_amd64.tar.gz` を落として `tar xf … mcp-publisher.exe`（PATH の通った場所へ）
+2. このフォルダで `mcp-publisher login github` → 表示されたコードを https://github.com/login/device に入れて許可
+3. `mcp-publisher publish`
+4. 確かめる: `curl.exe "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.YouheiOonuki/yorozu-craft"` に 1 件
+5. 計算を足して tools が変わったら、`src/app.mjs` の `VERSION` と `server.json` の `version`・tools を上げて 3 をもう一度（テストが version と tools の食い違いで落ちる）
+
 ## ライセンス
 
 コードは MIT License（`LICENSE`）。`vendor/` の中身は各リポジトリのコード（MIT）の写しです。

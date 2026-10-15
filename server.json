@@ -1,0 +1,45 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.YouheiOonuki/yorozu-craft",
+  "title": "yorozu-craft 制度の計算",
+  "description": "日本の制度の計算（認証なし・入力を保存しない）/ Japan tax and benefit calculators. No auth, no input stored.",
+  "version": "0.1.0",
+  "websiteUrl": "https://yorozu-craft.com/api/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://yorozu-api.oonuki-youhei.workers.dev/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "tools": [
+        "calc_appliance_electricity_cost",
+        "calc_appliance_replacement_saving",
+        "calc_attendance_limit",
+        "calc_child_support_levy",
+        "calc_childcare_leave_benefit",
+        "calc_childhood_vaccination_schedule",
+        "calc_consumption_tax_after_20pct_rule",
+        "calc_days_until",
+        "calc_deviation_score",
+        "calc_high_cost_medical_expense",
+        "calc_high_school_naishin",
+        "calc_high_school_tuition_support",
+        "calc_medical_expense_deduction",
+        "calc_mortgage_repayment",
+        "calc_pension_lump_sum_withdrawal",
+        "calc_pension_start_age",
+        "calc_residence_tax",
+        "calc_social_insurance_eligibility",
+        "calc_take_home_pay",
+        "calc_upcoming_system_changes",
+        "calc_year_end_tax_adjustment",
+        "convert_japanese_era",
+        "list_high_cost_medical_categories",
+        "school_grade_by_birthdate",
+        "tonight_sky_japan"
+      ]
+    }
+  }
+}

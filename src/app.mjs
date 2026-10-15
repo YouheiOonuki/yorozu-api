@@ -75,12 +75,14 @@ function index(base) {
 
 /* ---------- MCP（JSON-RPC 2.0。Streamable HTTP の POST に JSON で答える） ---------- */
 const PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05'];
+// 「self.*」のような入れ子の丸ごとの欄は、MCP の schema では名前「self」の欄にする（* はプロパティ名に使えず、Anthropic API がツールごと読み込まない: 2026-10-16）
+const mcpKey = (k) => k.replace(/\.\*$/, '');
 export function mcpTools() {
   const tools = CALCS.map((c) => ({
     name: c.tool,
     title: c.title,
     description: c.description.ja + '\n' + c.description.en + '\n入力 / Inputs: ' + Object.entries(c.params).map(([k, v]) => k + ' = ' + v).join('; '),
-    inputSchema: { type: 'object', properties: Object.fromEntries(Object.entries(c.params).map(([k, v]) => [k, { description: v }])), required: c.required, additionalProperties: true },
+    inputSchema: { type: 'object', properties: Object.fromEntries(Object.entries(c.params).map(([k, v]) => [mcpKey(k), { description: v }])), required: c.required, additionalProperties: true },
     annotations: { readOnlyHint: true, openWorldHint: false, idempotentHint: true },
   }));
   tools.push({
@@ -92,7 +94,9 @@ export function mcpTools() {
   return tools;
 }
 function callTool(name, args) {
-  args = args && typeof args === 'object' ? args : {};
+  // schema の欄の名前は「spouse.has」「rows.0.cost」の形なので、MCP の client はその名前のまま平らに送ってくる。
+  // GET の ?a.b= と同じく入れ子に直してから計算に渡す（直さないと配偶者・明細などの欄が黙って無視されていた: 2026-10-16）。入れ子で送られたものはそのまま
+  args = args && typeof args === 'object' && !Array.isArray(args) ? parseQuery(Object.entries(structuredClone(args))) : {};
   if (name === 'list_high_cost_medical_categories') return { result: BY_NAME.kogaku.extra.categories(args), meta: meta(BY_NAME.kogaku, args) };
   const c = BY_TOOL[name];
   if (!c) return null;

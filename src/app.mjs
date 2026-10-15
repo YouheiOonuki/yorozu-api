@@ -75,14 +75,12 @@ function index(base) {
 
 /* ---------- MCP（JSON-RPC 2.0。Streamable HTTP の POST に JSON で答える） ---------- */
 const PROTOCOLS = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05'];
-// 「self.*」のような入れ子の丸ごとの欄は、MCP の schema では名前「self」の欄にする（* はプロパティ名に使えず、Anthropic API がツールごと読み込まない: 2026-10-16）
-const mcpKey = (k) => k.replace(/\.\*$/, '');
 export function mcpTools() {
   const tools = CALCS.map((c) => ({
     name: c.tool,
     title: c.title,
     description: c.description.ja + '\n' + c.description.en + '\n入力 / Inputs: ' + Object.entries(c.params).map(([k, v]) => k + ' = ' + v).join('; '),
-    inputSchema: { type: 'object', properties: Object.fromEntries(Object.entries(c.params).map(([k, v]) => [mcpKey(k), { description: v }])), required: c.required, additionalProperties: true },
+    inputSchema: { type: 'object', properties: Object.fromEntries(Object.entries(c.params).map(([k, v]) => [k, { description: v }])), required: c.required, additionalProperties: true },
     annotations: { readOnlyHint: true, openWorldHint: false, idempotentHint: true },
   }));
   tools.push({

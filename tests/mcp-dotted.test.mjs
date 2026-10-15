@@ -5,10 +5,21 @@ import { mcp, mcpTools } from '../src/app.mjs';
 
 const call = (name, args) => mcp({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name, arguments: args } }).result.structuredContent.result;
 
-test('プロパティ名はすべて ^[a-zA-Z0-9_.-]{1,64}$（Anthropic API が読み込む形。self.* は self に）', () => {
-  for (const t of mcpTools()) for (const k of Object.keys(t.inputSchema.properties)) assert.match(k, /^[a-zA-Z0-9_.-]{1,64}$/, `${t.name}: ${k}`);
-  const jumin = mcpTools().find((t) => t.name === 'calc_residence_tax');
-  assert.ok(jumin.inputSchema.properties.self && jumin.inputSchema.properties.spouse);
+test('プロパティ名はすべて ^[a-zA-Z0-9_.-]{1,64}$（Anthropic API が読み込む形）。説明の「入力」の欄と schema の欄が同じ', () => {
+  for (const t of mcpTools()) {
+    const keys = Object.keys(t.inputSchema.properties);
+    for (const k of keys) assert.match(k, /^[a-zA-Z0-9_.-]{1,64}$/, `${t.name}: ${k}`);
+    const inputs = t.description.split('入力 / Inputs: ')[1];
+    if (inputs) assert.deepEqual(inputs.split('; ').map((s) => s.split(' = ')[0]), keys, t.name);
+  }
+});
+
+test('住民税: 平らに送った本人・配偶者の欄が効く（ひとり親・配偶者控除）', () => {
+  const none = call('calc_residence_tax', { income: 3000000 });
+  const flat = call('calc_residence_tax', { income: 3000000, 'self.kafu': 'hitorioya', 'spouse.has': true, 'spouse.amount': 0 });
+  const nested = call('calc_residence_tax', { income: 3000000, self: { kafu: 'hitorioya' }, spouse: { has: true, amount: 0 } });
+  assert.deepEqual(flat, nested);
+  assert.notDeepEqual(flat, none);
 });
 
 test('平らに送った欄（schema の名前のまま）と入れ子で送った欄は同じ結果。手取り: 配偶者控除が効く', () => {

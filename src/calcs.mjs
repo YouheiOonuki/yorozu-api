@@ -92,7 +92,11 @@ export const CALCS = [
       ja: '給与の人の個人住民税（所得割・均等割・森林環境税）の年税額と、非課税になるかの判定を、地方税法の手順で計算します。',
       en: 'Japanese individual residence tax for salaried employees: income-based and per-capita levies, forest environment tax, and whether you are exempt, following the Local Tax Act.',
     },
-    params: { nendo: '年度（既定は今の年度）', income: '給与の収入金額（円）', shakai: '社会保険料（円）', 'city.shitei': '政令指定都市（true/false）', 'self.*': '本人の区分', 'spouse.*': '配偶者', relatives: '扶養親族の配列' },
+    params: { nendo: '年度（既定は今の年度）', income: '給与の収入金額（円）', shakai: '社会保険料（円）', 'city.shitei': '政令指定都市（true/false）',
+      'self.shogai': '本人の障害（none/ippan/tokubetsu）', 'self.kafu': '本人の寡婦・ひとり親（none/kafu/hitorioya）', 'self.parent': 'ひとり親の別（mother/father）',
+      'self.kinro': '勤労学生（true/false）', 'self.minor': '未成年（true/false）', 'self.seikatsuhogo': '生活扶助を受けている（true/false）',
+      'spouse.has': '配偶者あり（true/false）', 'spouse.incomeType': '配偶者の収入の種類（kyuyo=給与の収入金額 / shotoku=所得金額）', 'spouse.amount': '配偶者の収入か所得（円）',
+      'spouse.over70': '配偶者が70歳以上（true/false）', 'spouse.shogai': '配偶者の障害（none/ippan/tokubetsu/dokyo）', relatives: '扶養親族の配列' },
     required: ['income'],
     run(input) {
       const nendo = num(input.nendo, JuminzeiV.CURRENT);

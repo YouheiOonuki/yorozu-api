@@ -92,7 +92,9 @@ export function mcpTools() {
   return tools;
 }
 function callTool(name, args) {
-  args = args && typeof args === 'object' ? args : {};
+  // schema の欄の名前は「spouse.has」「rows.0.cost」の形なので、MCP の client はその名前のまま平らに送ってくる。
+  // GET の ?a.b= と同じく入れ子に直してから計算に渡す（直さないと配偶者・明細などの欄が黙って無視されていた: 2026-10-16）。入れ子で送られたものはそのまま
+  args = args && typeof args === 'object' && !Array.isArray(args) ? parseQuery(Object.entries(structuredClone(args))) : {};
   if (name === 'list_high_cost_medical_categories') return { result: BY_NAME.kogaku.extra.categories(args), meta: meta(BY_NAME.kogaku, args) };
   const c = BY_TOOL[name];
   if (!c) return null;

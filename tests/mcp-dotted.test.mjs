@@ -14,6 +14,19 @@ test('プロパティ名はすべて ^[a-zA-Z0-9_.-]{1,64}$（Anthropic API が�
   }
 });
 
+test('required の欄はすべて properties にある（全ツール。前は calc_appliance_electricity_cost が required: items で properties は items.0.* だけだった: 2026-10-19）', () => {
+  for (const t of mcpTools()) {
+    for (const k of t.inputSchema.required || []) assert.ok(k in t.inputSchema.properties, `${t.name}: ${k}`);
+  }
+});
+
+test('家電の電気代: items を配列で送っても、items.0.* を平らに送っても同じ結果', () => {
+  const nested = call('calc_appliance_electricity_cost', { items: [{ method: 'wh', watt: 1000, hours: 1, days: 30 }] });
+  const flat = call('calc_appliance_electricity_cost', { 'items.0.method': 'wh', 'items.0.watt': 1000, 'items.0.hours': 1, 'items.0.days': 30 });
+  assert.equal(nested.ok, true);
+  assert.deepEqual(flat, nested);
+});
+
 test('住民税: 平らに送った本人・配偶者の欄が効く（ひとり親・配偶者控除）', () => {
   const none = call('calc_residence_tax', { income: 3000000 });
   const flat = call('calc_residence_tax', { income: 3000000, 'self.kafu': 'hitorioya', 'spouse.has': true, 'spouse.amount': 0 });

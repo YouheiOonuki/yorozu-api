@@ -59,6 +59,7 @@ export const CALCS_KURASHI = [
     },
     params: {
       unitPrice: '電気料金の単価（円/kWh。既定は出典の目安単価）',
+      items: '家電の配列（1〜40 件）。各要素の欄は下の items.0.*（items.0.watt の形で平らにも送れる）',
       'items.0.method': 'wh（消費電力 W × 時間。既定）か annual（年間消費電力量）', 'items.0.name': '名前', 'items.0.watt': '消費電力（W）',
       'items.0.hours': '1 日の使用時間（時間。24 まで）', 'items.0.days': '1 か月の使用日数（31 まで）', 'items.0.standbyW': '待機電力（W。wh のときだけ）',
       'items.0.annualKwh': '年間消費電力量（kWh。annual のとき）', 'items.0.qty': '台数（既定 1）',

@@ -102,7 +102,8 @@ function callTool(name, args) {
 }
 export function mcp(msg) {
   const rpc = (result) => ({ jsonrpc: '2.0', id: msg.id, result });
-  const err = (code, message) => ({ jsonrpc: '2.0', id: msg.id ?? null, error: { code, message } });
+  // 本文が null・数値などのとき msg.id を読むと TypeError になり 500 が返っていた（10-19 の Workers の点検 #5）。msg?.id で -32600 を返す
+  const err = (code, message) => ({ jsonrpc: '2.0', id: msg?.id ?? null, error: { code, message } });
   if (!msg || msg.jsonrpc !== '2.0' || typeof msg.method !== 'string') return err(-32600, 'Invalid Request');
   if (msg.id === undefined) return null;   // 通知（notifications/initialized など）には答えない
   switch (msg.method) {
@@ -169,7 +170,8 @@ export const handler = {
     if (m[2]) {
       const fn = calc.extra && calc.extra[m[2]];
       if (!fn) return json({ error: 'not found' }, 404);
-      return json({ result: fn(input), meta: meta(calc, input) });
+      // 本体の計算（runCalc）と同じく、投げたら 400 の JSON（10-19 の Workers の点検 #6。前は 500 で JSON でも CORS 付きでもなかった）
+      try { return json({ result: fn(input), meta: meta(calc, input) }); } catch { return json({ error: '計算できませんでした / calculation failed', meta: meta(calc, input) }, 400); }
     }
     let out;
     try { out = runCalc(calc, input); } catch { return json({ error: '計算できませんでした / calculation failed', meta: meta(calc, input) }, 400); }

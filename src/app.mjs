@@ -129,9 +129,31 @@ export function mcp(msg) {
   }
 }
 
+const MAX_BODY = 65536;
+const TOO_LARGE = new Error('too large');
+/**
+ * 本文を読みながら MAX_BODY バイトで止める（QUEUE Q-038）。content-length の無い（chunked）本文も素通りしない。
+ * 超えたら TOO_LARGE を投げる（呼び出し側で 413）。読めない JSON は SyntaxError（400）
+ */
 async function readBody(request) {
-  const text = await request.text();
-  if (text.length > 65536) throw new Error('too large');
+  if (Number(request.headers.get('content-length') || 0) > MAX_BODY) throw TOO_LARGE;
+  let text = '';
+  if (request.body) {
+    const reader = request.body.getReader();
+    const chunks = [];
+    let n = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      n += value.byteLength;
+      if (n > MAX_BODY) { try { await reader.cancel(); } catch { /* 止めるだけ */ } throw TOO_LARGE; }
+      chunks.push(value);
+    }
+    const buf = new Uint8Array(n);
+    let o = 0;
+    for (const c of chunks) { buf.set(c, o); o += c.byteLength; }
+    text = new TextDecoder().decode(buf);
+  }
   return text ? JSON.parse(text) : {};
 }
 
@@ -145,7 +167,7 @@ export const handler = {
     if (path === '/mcp') {
       if (request.method !== 'POST') return json({ error: 'POST で JSON-RPC を送ってください（SSE の GET はありません） / Use POST' }, 405);
       let body;
-      try { body = await readBody(request); } catch { return json({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }, 400); }
+      try { body = await readBody(request); } catch (e) { return e === TOO_LARGE ? json({ jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Request too large' } }, 413) : json({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }, 400); }
       if (Array.isArray(body)) {
         const out = body.map(mcp).filter(Boolean);
         return out.length ? json(out) : new Response(null, { status: 202, headers: HEADERS });
@@ -166,7 +188,7 @@ export const handler = {
     const calc = m && BY_NAME[m[1]];
     if (!calc) return json({ error: 'not found', calcs: base + '/v1' }, 404);
     let input;
-    try { input = request.method === 'POST' ? await readBody(request) : parseQuery(url.searchParams); } catch { return json({ error: 'JSON の本文が読めない / invalid JSON body' }, 400); }
+    try { input = request.method === 'POST' ? await readBody(request) : parseQuery(url.searchParams); } catch (e) { return e === TOO_LARGE ? json({ error: '本文が大きすぎる（64 KB まで） / body too large (64 KB max)' }, 413) : json({ error: 'JSON の本文が読めない / invalid JSON body' }, 400); }
     if (m[2]) {
       const fn = calc.extra && calc.extra[m[2]];
       if (!fn) return json({ error: 'not found' }, 404);

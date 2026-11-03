@@ -5,7 +5,7 @@
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "4e717186efdf439d4c2c30d0d77d8de703d7669f",
+      "commit": "c5cce5d000099fb40aa6d2fc83b58c9f5d950086",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "26575f5ffb65eef9aee39c6423a3f38c551f07b9",
@@ -16,11 +16,11 @@
         "lib/ikukyu-values.js": "cd1976856a58cbfd76a6dc03122b2372d255237a",
         "lib/invoice.js": "64cabc7e76e60939fcff3d6bddcb4bd71e7c048e",
         "lib/invoice-values.js": "805698ba398b7253961d49233d9dd01a7dcc64d7",
-        "lib/nenmatsu.js": "5adae0919bafb9835530dd776f012b97308717f8",
-        "lib/tax2026.js": "89691c3d9c3675fa2f1b9e8feb4cc6ee555dedb7",
+        "lib/nenmatsu.js": "c4bdc8e29d4f2d088b7a6c345175ef787c26b164",
+        "lib/tax2026.js": "fdc53bc11d8f040f51e877fd635692bcd1082667",
         "lib/kyuyo-table-2025.js": "a1bd4aaae2a38c9f3af14243040fafd4de7abd10",
         "lib/kyuyo-table-2026.js": "15783b2621163da6c1711016d3c7fdd484df493a",
-        "lib/juminzei.js": "a09cac6ad3316de394d96347985cd506f648f6bd",
+        "lib/juminzei.js": "d00647d804d493b3a4bdf62f210c652a01326dc2",
         "lib/juminzei-values.js": "93771cce14170d7e6f0eb919fb92f9745902962e",
         "lib/kaitei-values.js": "ccb97ad5183e0382864c154796ce23327cddf2be",
         "lib/ikukyu.js": "d9ec035b8df59bf1c2b940674f98e83a52484624",

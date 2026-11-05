@@ -8,6 +8,10 @@
   'use strict';
 
   var CHECKED = '2026-09-24';
+  // 学年の法令の値（schoolEntry・schoolYear・schoolLength・gradSchoolLength）と厄年・年祝いの例（yakudoshi・toshiiwai）は、計算と一緒に
+  // gakunen-calc.js・yakudoshi-calc.js が持つ（生成物。正本は root の tools/common/calc。yorozu-plans D484）。ここはその値を指すだけ
+  var G = (typeof module !== 'undefined' && module.exports) ? require('./gakunen-calc.js') : root.Gakunen;
+  var Y = (typeof module !== 'undefined' && module.exports) ? require('./yakudoshi-calc.js') : root.Yakudoshi;
 
   var CONSTANTS = {
     // start: その元号の最初の日（グレゴリオ暦）、end: 最後の日（今の元号は null）
@@ -131,37 +135,13 @@
       url: 'https://laws.e-gov.go.jp/law/129AC0000000089',
       checked: CHECKED
     },
-    schoolEntry: {
-      value: '満六歳に達した日の翌日以後における最初の学年の初めから',
-      label: '学校教育法第17条（就学の始期）',
-      source: 'e-Gov 法令検索「学校教育法」第十七条',
-      url: 'https://laws.e-gov.go.jp/law/322AC0000000026',
-      checked: CHECKED
-    },
-    schoolYear: {
-      value: '4月1日に始まり、翌年3月31日に終わる',
-      label: '学校教育法施行規則第59条（小学校の学年）',
-      source: 'e-Gov 法令検索「学校教育法施行規則」第五十九条',
-      url: 'https://laws.e-gov.go.jp/law/322M40000080011',
-      checked: CHECKED
-    },
+    schoolEntry: G.VALUES.schoolEntry,
+    schoolYear: G.VALUES.schoolYear,
 
     // --- 学年早見表・履歴書の学歴（gakunen/。2026-09-25 に e-Gov 法令 API で条文を取得して確認） ---
     // 修業年限（年）。履歴書の学歴の既定の年数に使う。専門学校は法律では「1 年以上」なので、画面の既定の 2 年は法令の値ではない
-    schoolLength: {
-      value: { elementary: 6, junior: 3, high: 3, univ4: 4, univ6: 6, tandai: 2, kosen: 5 },
-      label: '修業年限: 小学校 6 年（32 条）、中学校 3 年（47 条）、高等学校 全日制 3 年（56 条。定時制・通信制は 3 年以上）、大学 4 年（87 条 1 項。医学・歯学・薬学の臨床・獣医学は 6 年、同 2 項）、短期大学 2 年または 3 年（108 条 2 項）、高等専門学校 5 年（117 条。商船は 5 年 6 月）、専修学校 1 年以上（124 条）',
-      source: 'e-Gov 法令検索「学校教育法」第三十二条・第四十七条・第五十六条・第八十七条・第百八条・第百十七条・第百二十四条',
-      url: 'https://laws.e-gov.go.jp/law/322AC0000000026',
-      checked: '2026-09-25'
-    },
-    gradSchoolLength: {
-      value: { master: 2, doctorLater: 3, doctor6: 4 },
-      label: '標準修業年限: 修士課程 2 年（3 条 2 項）、博士課程 5 年（4 条 2 項。前期 2 年・後期 3 年に区分できる、同 3 項）、医学・歯学・薬学（6 年制の学部が基礎）・獣医学の博士課程は 4 年（45 条）',
-      source: 'e-Gov 法令検索「大学院設置基準」第三条・第四条・第四十五条',
-      url: 'https://laws.e-gov.go.jp/law/349M50000080028',
-      checked: '2026-09-25'
-    },
+    schoolLength: G.VALUES.schoolLength,
+    gradSchoolLength: G.VALUES.gradSchoolLength,
     kindergarten: {
       value: '満三歳から、小学校就学の始期に達するまでの幼児',
       label: '学校教育法第26条（幼稚園に入園できる者）',
@@ -214,46 +194,8 @@
 
     // --- 厄年・年祝い（yakudoshi/）と回忌（kaiki/）。法令ではなく慣習なので、寺社・宗派の公式ページで確かめた「例」として持つ ---
     // 2026-09-25 に各ページを開いて本文と令和8年の表を読んだ。決まった一つの規則は無い（寺社・地域で違う）
-    yakudoshi: {
-      value: {
-        // 数え年（生まれた年を 1 歳、元日で 1 つ増える）。37 歳は神社本庁・西新井大師にあり、成田山には無い。女性の 61 歳は 3 か所とも本厄
-        kazoe: { male: [25, 42, 61], female: [19, 33, 37, 61], taiyaku: { male: 42, female: 33 }, optional: { female: [37] } },
-        // 川崎大師: 「その年の満年令」（その年の誕生日を迎えた後の満年齢 = 数え年 − 1）で 男 25・42・60、女 19・33・60
-        mannen: { male: [25, 42, 60], female: [19, 33, 60], taiyaku: { male: 42, female: 33 }, optional: {} }
-      },
-      label: '厄年（本厄）の年齢の例。前後 1 年が前厄・後厄',
-      source: '神社本庁「厄祓い」ほか（sources）',
-      url: 'https://www.jinjahoncho.or.jp/omairi/yakubarai/',
-      sources: [
-        { name: '神社本庁「厄祓い」', url: 'https://www.jinjahoncho.or.jp/omairi/yakubarai/', note: '通常は数え年（元日で 1 つ歳をとる）。男 25・42・61、女 19・33・37（・61）。地域によって多少異なる。大厄は男 42・女 33' },
-        { name: '成田山新勝寺「開運厄除御祓」', url: 'https://www.naritasan.or.jp/pray/yakuyoke/', note: '数え年。男 25・42・61、女 19・33・61（37 は無い）。令和8年の本厄 42 歳は昭和60年生' },
-        { name: '西新井大師總持寺「厄除け祈願」', url: 'https://www.nishiaraidaishi.or.jp/yakuyoke/', note: '数え年（元日ごとに 1 歳加算）。男 25・42・61、女 19・33・37、男女共通の 61（還暦）' },
-        { name: '川崎大師平間寺「厄年」と令和8年 年令早見表（PDF）', url: 'https://www.kawasakidaishi.com/yakuyoke/yakudoshi/', note: '「その年の満年令」で男 25・42、女 19・33、男女 60。令和8年の男性本厄 42 歳は昭和59年生（数え年の寺社より 1 年早い生まれ）' }
-      ],
-      checked: '2026-09-25'
-    },
-    toshiiwai: {
-      // age: 祝いの年齢。還暦だけは「数え年 61 ＝ 満 60」（同じ生まれ年）。ほかは数え年・満年齢で生まれ年が 1 年ずれる
-      value: [
-        { key: 'kanreki', name: '還暦', kana: 'かんれき', age: 61, manAge: 60 },
-        { key: 'koki', name: '古希（古稀）', kana: 'こき', age: 70 },
-        { key: 'kiju', name: '喜寿', kana: 'きじゅ', age: 77 },
-        { key: 'sanju', name: '傘寿', kana: 'さんじゅ', age: 80 },
-        { key: 'beiju', name: '米寿', kana: 'べいじゅ', age: 88 },
-        { key: 'sotsuju', name: '卒寿', kana: 'そつじゅ', age: 90 },
-        { key: 'hakuju', name: '白寿', kana: 'はくじゅ', age: 99 },
-        { key: 'momoju', name: '百寿', kana: 'ももじゅ', age: 100 }
-      ],
-      label: '長寿の祝い（年祝い）の年齢',
-      source: '神社本庁「長寿を祝う神事」ほか（sources）',
-      url: 'https://www.jinjahoncho.or.jp/omairi/choju/',
-      sources: [
-        { name: '神社本庁「長寿を祝う神事」', url: 'https://www.jinjahoncho.or.jp/omairi/choju/', note: '還暦 61・古稀 70・喜寿 77・傘寿 80・米寿 88・卒寿 90・白寿 99・百寿 100 ほか。「数え年、満年齢のいずれで数えても差し支えない（地域によって様々な習慣）」。数え年の 61 歳が還暦' },
-        { name: '愛知県神社庁「年祝い一覧」', url: 'https://aichi-jinjacho.or.jp/toshiiwai.html', note: '還暦（満60才・数え61才）、古希（満69才・数え70才）… と併記' },
-        { name: '川崎大師 令和8年 年令早見表（PDF）', url: 'https://www.kawasakidaishi.com/doc/yakudoshi/yakudoshi_table_r08.pdf', note: '「健康長寿」の古稀 70・喜寿 77・傘寿 80・米寿 88・卒寿 90・白寿 99 を満年齢（今年の誕生日の年令）で色分け' }
-      ],
-      checked: '2026-09-25'
-    },
+    yakudoshi: Y.VALUES.yakudoshi,
+    toshiiwai: Y.VALUES.toshiiwai,
     kaiki: {
       value: {
         // n: 回忌の数（一周忌は 1）。年は命日の年 + n − 1（一周忌だけ + 1）

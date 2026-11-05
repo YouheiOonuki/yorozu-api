@@ -33,7 +33,8 @@ export const FILES = {
     'lib/take-home.js', 'lib/take-home-values.js',
     'lib/yobosesshu.js', 'lib/yobosesshu-values.js',
   ],
-  gengo: ['calc.js', 'constants.js'],
+  // calc.js・constants.js は学年と厄年・年祝いを gakunen-calc.js・yakudoshi-calc.js から読む（どちらも root の tools/common/calc の生成物。yorozu-plans D484・Q-106）
+  gengo: ['calc.js', 'constants.js', 'gakunen-calc.js', 'yakudoshi-calc.js'],
   // K150: 学校の計算
   'gakko-keisan': ['lib/common.js', 'lib/naishin.js', 'lib/naishin-values.js', 'lib/shusseki.js', 'lib/shusseki-values.js', 'lib/atonannichi.js', 'lib/atonannichi-values.js', 'lib/hensachi.js'],
   // K150: くらしの計算

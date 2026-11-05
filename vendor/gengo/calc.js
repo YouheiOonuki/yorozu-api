@@ -9,6 +9,8 @@
   'use strict';
 
   var K = (typeof module !== 'undefined' && module.exports) ? require('./constants.js') : root.Constants;
+  var G = (typeof module !== 'undefined' && module.exports) ? require('./gakunen-calc.js') : root.Gakunen;     // 学年（D484 の生成物）
+  var Y = (typeof module !== 'undefined' && module.exports) ? require('./yakudoshi-calc.js') : root.Yakudoshi; // 厄年・年祝い（同）
 
   // --- 日付の道具 ---
   function isLeap(y) { return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; }
@@ -280,112 +282,7 @@
     return { y: y, m: birth.m, d: birth.d };
   }
 
-  // --- 学年（4 月 2 日〜翌年 4 月 1 日生まれが同じ学年） ---
-
-  /** 早生まれ（1 月 1 日〜4 月 1 日生まれ） */
-  function isHayaumare(birth) { return birth.m < 4 || (birth.m === 4 && birth.d === 1); }
-  /** 小学校に入学する年（学校教育法 17 条: 満 6 歳に達した日の翌日以後の最初の 4 月 1 日） */
-  function schoolEntryYear(birth) { return birth.y + (isHayaumare(birth) ? 6 : 7); }
-
-  /**
-   * 入学・卒業の年月（履歴書用）
-   * @returns {Array<{key:string, event:'in'|'out', date:{y,m,d}}>}
-   */
-  function schoolHistory(birth) {
-    var e = schoolEntryYear(birth);
-    function ev(key, event, y) { return { key: key, event: event, date: event === 'in' ? { y: y, m: 4, d: 1 } : { y: y, m: 3, d: 31 } }; }
-    return [
-      ev('elementary', 'in', e), ev('elementary', 'out', e + 6),
-      ev('junior', 'in', e + 6), ev('junior', 'out', e + 9),
-      ev('high', 'in', e + 9), ev('high', 'out', e + 12),
-      ev('college2', 'in', e + 12), ev('college2', 'out', e + 14),
-      ev('university', 'in', e + 12), ev('university', 'out', e + 16)
-    ];
-  }
-
-  /**
-   * ref の日の学年（目安。浪人・留年・飛び級は考えない）
-   * @returns {{stage:string, grade:number}} stage: 'preschool'|'elementary'|'junior'|'high'|'university'|'graduated'|'notborn'
-   */
-  function gradeAt(birth, ref) {
-    if (cmp(ref, birth) < 0) return { stage: 'notborn', grade: 0 };
-    var fy = ref.m >= 4 ? ref.y : ref.y - 1;          // 学年の年度（4 月 1 日始まり）
-    var n = fy - schoolEntryYear(birth) + 1;          // 小 1 が 1
-    if (n <= 0) return { stage: 'preschool', grade: n };   // 0: 年長、-1: 年中、-2: 年少（3 年保育）
-    if (n <= 6) return { stage: 'elementary', grade: n };
-    if (n <= 9) return { stage: 'junior', grade: n - 6 };
-    if (n <= 12) return { stage: 'high', grade: n - 9 };
-    if (n <= 16) return { stage: 'university', grade: n - 12 };
-    return { stage: 'graduated', grade: 0 };
-  }
-
-  // --- 学年早見表・履歴書の学歴（gakunen/） ---
-
-  /** その日の学年の年度（4 月 1 日始まり。学校教育法施行規則 59 条） */
-  function fiscalYearOf(date) { return date.m >= 4 ? date.y : date.y - 1; }
-  /** fy 年度の通し番号の学年（小 1 が 1、年長 0、年少 -2、大学 1 年 13、修士 1 年 17、博士 3 年 21） */
-  function gradeNumber(birth, fy) { return fy - schoolEntryYear(birth) + 1; }
-
-  // 学年早見表の行（画面の名前のキーと通し番号）。大学院は大学 4 年・修士 2 年・博士後期 3 年とストレートに進んだ場合
-  var GRADE_ROWS = [
-    ['k3', -2], ['k4', -1], ['k5', 0],
-    ['e1', 1], ['e2', 2], ['e3', 3], ['e4', 4], ['e5', 5], ['e6', 6],
-    ['j1', 7], ['j2', 8], ['j3', 9], ['h1', 10], ['h2', 11], ['h3', 12],
-    ['u1', 13], ['u2', 14], ['u3', 15], ['u4', 16],
-    ['m1', 17], ['m2', 18], ['d1', 19], ['d2', 20], ['d3', 21]
-  ];
-
-  /**
-   * fy 年度の学年早見表。通し番号 n の学年は (fy − n − 6) 年 4 月 2 日 〜 (fy − n − 5) 年 4 月 1 日生まれ
-   * age は年度の初め（4 月 1 日）の満年齢。年度中に誕生日を迎えて age + 1 になる
-   * @returns {Array<{key:string, n:number, from:{y,m,d}, to:{y,m,d}, age:number}>}
-   */
-  function gradeTable(fy) {
-    return GRADE_ROWS.map(function (r) {
-      var n = r[1], entry = fy - n + 1;   // 小学校に入学した（する）年
-      return { key: r[0], n: n, from: { y: entry - 7, m: 4, d: 2 }, to: { y: entry - 6, m: 4, d: 1 }, age: n + 5 };
-    });
-  }
-
-  /**
-   * 履歴書の学歴（最終学歴まで。入学は 4 月、卒業・修了は 3 月）
-   * @param {{y,m,d}} birth
-   * @param {object} [opt]
-   *   final: 'high' | 'senmon' | 'tandai' | 'kosen' | 'univ4' | 'univ6' | 'master' | 'doctor'（修士 2 年＋博士後期 3 年）| 'doctor6'（6 年制＋博士 4 年）
-   *   years: { 学校のキー: 在学年数 }（留年・休学・定時制など。既定は修業年限、専門学校は 2 年）
-   *   ronin: 高校を出てから次の学校に入るまでの年数（浪人）
-   * @returns {Array<{key:string, event:'in'|'out', date:{y,m,d}}>|null}
-   */
-  function resumeHistory(birth, opt) {
-    opt = opt || {};
-    var L = K.schoolLength.value, G = K.gradSchoolLength.value;
-    var PATH = {
-      high: ['elementary', 'junior', 'high'],
-      senmon: ['elementary', 'junior', 'high', 'senmon'],
-      tandai: ['elementary', 'junior', 'high', 'tandai'],
-      kosen: ['elementary', 'junior', 'kosen'],
-      univ4: ['elementary', 'junior', 'high', 'univ4'],
-      univ6: ['elementary', 'junior', 'high', 'univ6'],
-      master: ['elementary', 'junior', 'high', 'univ4', 'master'],
-      doctor: ['elementary', 'junior', 'high', 'univ4', 'master', 'doctorLater'],
-      doctor6: ['elementary', 'junior', 'high', 'univ6', 'doctor6']
-    };
-    var path = PATH[opt.final || 'univ4'];
-    if (!path || !birth || !validDate(birth.y, birth.m, birth.d)) return null;
-    var STD = { senmon: 2, master: G.master, doctorLater: G.doctorLater, doctor6: G.doctor6 };
-    var years = opt.years || {};
-    var ronin = Math.max(0, Math.min(10, Math.floor(Number(opt.ronin) || 0)));
-    var y = schoolEntryYear(birth), out = [];
-    path.forEach(function (key, i) {
-      if (path[i - 1] === 'high') y += ronin;
-      var n = Math.floor(Number(years[key]));
-      if (!(n >= 1 && n <= 12)) n = L[key] !== undefined ? L[key] : STD[key];
-      out.push({ key: key, event: 'in', date: { y: y, m: 4, d: 1 } });
-      y += n;
-      out.push({ key: key, event: 'out', date: { y: y, m: 3, d: 31 } });
-    });
-    return out;
-  }
+  // --- 学年・学年早見表・履歴書の学歴（gakunen/）と厄年・年祝い（yakudoshi/）は gakunen-calc.js・yakudoshi-calc.js（生成物。正本は root の tools/common/calc。yorozu-plans D484） ---
 
   // --- 干支 ---
   var STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
@@ -397,6 +294,14 @@
   function eto(y) {
     var s = ((y - 4) % 10 + 10) % 10, b = ((y - 4) % 12 + 12) % 12;
     return { kanji: STEMS[s] + BRANCHES[b], kana: STEMS_KANA[s] + BRANCHES_KANA[b], branch: BRANCHES[b], branchKana: BRANCHES_KANA[b], animalEn: ANIMALS_EN[b] };
+  }
+  // 恵方（歳徳神の方位）: その年の十干で決まる。甲・己→甲の方位（東北東）、乙・庚→庚（西南西）、丙・辛→丙（南南東）、丁・壬→壬（北北西）、戊・癸→丙（南南東）。
+  // 出典: 農林水産省「節分と恵方巻レシピ」・国立国会図書館レファレンス協同データベース（名古屋市鶴舞中央図書館の回答）。2026-11-05 確認。guide.html#q-eho の表はこの表と同じ（テスト）
+  var EHOU = [['甲', '東北東'], ['庚', '西南西'], ['丙', '南南東'], ['壬', '北北西'], ['丙', '南南東']]; // 十干の 甲乙丙丁戊 と 己庚辛壬癸 が同じ行
+  /** 西暦の年の恵方（干支と同じく 1 月 1 日の年で数える）。{ stem: その年の十干, at: 方位の名の十干, dir: 16 方位の名 } */
+  function ehou(y) {
+    var s = ((y - 4) % 10 + 10) % 10;
+    return { stem: STEMS[s], at: EHOU[s % 5][0], dir: EHOU[s % 5][1] };
   }
 
   // --- 年齢早見表 ---
@@ -413,61 +318,6 @@
       rows.push({ birthYear: by, eras: erasOfYear(by), eto: eto(by), after: a, before: a - 1 });
     }
     return rows;
-  }
-
-  // --- 厄年・年祝い（yakudoshi/） ---
-
-  /** 数え年（生まれた年を 1 歳、元日で 1 つ増える） */
-  function kazoeAge(birthYear, y) { return y - birthYear + 1; }
-  var YAKU_KIND = ['mae', 'hon', 'ato'];
-
-  /**
-   * y 年の厄年の表
-   * @param {number} y 年
-   * @param {'kazoe'|'mannen'} [rule] kazoe: 数え年（多くの寺社）、mannen: その年の満年齢（川崎大師）
-   * @returns {Array<{sex:'male'|'female', hon:number, kind:'mae'|'hon'|'ato', age:number, birthYear:number, taiyaku:boolean, optional:boolean}>}
-   *   age はその数え方での年齢（数え年、または その年の誕生日後の満年齢）
-   */
-  function yakuTable(y, rule) {
-    var R = K.yakudoshi.value[rule === 'mannen' ? 'mannen' : 'kazoe'];
-    var out = [];
-    ['male', 'female'].forEach(function (sex) {
-      R[sex].forEach(function (hon) {
-        [-1, 0, 1].forEach(function (d, i) {
-          var age = hon + d;
-          // 数え年なら 生まれ年 = y − 数え年 + 1、満年齢なら y − 満年齢
-          var by = rule === 'mannen' ? y - age : y - age + 1;
-          out.push({ sex: sex, hon: hon, kind: YAKU_KIND[i], age: age, birthYear: by,
-            taiyaku: R.taiyaku[sex] === hon, optional: (R.optional[sex] || []).indexOf(hon) >= 0 });
-        });
-      });
-    });
-    return out;
-  }
-  /** 生まれ年・性別の、y 年の厄（無ければ []。37 と 61 の前後厄のように重なることは今の年齢の組では無い） */
-  function yakuOf(birthYear, sex, y, rule) {
-    return yakuTable(y, rule).filter(function (r) { return r.sex === sex && r.birthYear === birthYear; });
-  }
-
-  /**
-   * y 年の年祝いの表。数え年で祝う場合と満年齢で祝う場合の生まれ年
-   * 還暦は 数え 61 ＝ 満 60 なので、どちらも同じ生まれ年（y − 60）
-   * @returns {Array<{key,name,kana,age,kazoeBirth:number,manAge:number,manBirth:number}>}
-   */
-  function toshiiwaiTable(y) {
-    return K.toshiiwai.value.map(function (t) {
-      var manAge = t.manAge || t.age;
-      return { key: t.key, name: t.name, kana: t.kana, age: t.age, kazoeBirth: y - t.age + 1, manAge: manAge, manBirth: y - manAge };
-    });
-  }
-  /** 生まれ年の人が y 年に当たる年祝い（数え年・満年齢のどちらかで当たるもの） */
-  function toshiiwaiOf(birthYear, y) {
-    var out = [];
-    toshiiwaiTable(y).forEach(function (t) {
-      var byKazoe = t.kazoeBirth === birthYear, byMan = t.manBirth === birthYear;
-      if (byKazoe || byMan) out.push({ key: t.key, name: t.name, kazoe: byKazoe, man: byMan, age: t.age, manAge: t.manAge });
-    });
-    return out;
   }
 
   // --- 回忌・忌日（kaiki/） ---
@@ -543,10 +393,10 @@
     ERAS: ERAS, eraByKey: eraByKey, lastYearOf: lastYearOf, eraOf: eraOf, erasOfYear: erasOfYear, PRE_MEIJI_ERAS: PRE, preErasOfYear: preErasOfYear,
     formatEraYear: formatEraYear, formatWareki: formatWareki, formatAbbr: formatAbbr, MONTHS_EN: MONTHS_EN,
     toSeireki: toSeireki, parseJaNumber: parseJaNumber, parseInput: parseInput, inputToDate: inputToDate,
-    ageAt: ageAt, anniversary: anniversary, isHayaumare: isHayaumare, schoolEntryYear: schoolEntryYear,
-    schoolHistory: schoolHistory, gradeAt: gradeAt, eto: eto, ageTable: ageTable,
-    fiscalYearOf: fiscalYearOf, gradeNumber: gradeNumber, gradeTable: gradeTable, resumeHistory: resumeHistory,
-    kazoeAge: kazoeAge, yakuTable: yakuTable, yakuOf: yakuOf, toshiiwaiTable: toshiiwaiTable, toshiiwaiOf: toshiiwaiOf,
+    ageAt: ageAt, anniversary: anniversary, isHayaumare: G.isHayaumare, schoolEntryYear: G.schoolEntryYear,
+    schoolHistory: G.schoolHistory, gradeAt: G.gradeAt, eto: eto, ehou: ehou, ageTable: ageTable,
+    fiscalYearOf: G.fiscalYearOf, gradeNumber: G.gradeNumber, gradeTable: G.gradeTable, resumeHistory: G.resumeHistory,
+    kazoeAge: Y.kazoeAge, yakuTable: Y.yakuTable, yakuOf: Y.yakuOf, toshiiwaiTable: Y.toshiiwaiTable, toshiiwaiOf: Y.toshiiwaiOf,
     kanjiNumber: kanjiNumber, kaikiName: kaikiName, memorialDay: memorialDay, kaikiList: kaikiList, chuinList: chuinList,
     kaikiYearTable: kaikiYearTable, weekdayOf: weekdayOf
   };

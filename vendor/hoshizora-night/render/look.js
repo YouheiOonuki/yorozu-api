@@ -257,7 +257,8 @@
       helpLabel: 'How to use', helpStart: 'Start', sheetLabel: 'Details', timePanel: 'Time travel', placePanel: 'Place', menu: 'Menu',
       help: [['Drag', 'Look around (swipe on a phone)'], ['Pinch / wheel', 'Zoom in and out'], ['Tap', 'Open notes on a constellation, star, the Moon or a planet'],
         ['Time', 'Move time and watch the stars, Sun and Moon move'], ['Place', 'Pick a city or type a latitude and longitude'], ['Red light', 'Keeps your eyes used to the dark outdoors']],
-      links: { calendar: 'Sky calendar', planisphere: 'Printable planisphere' } },
+      links: { calendar: 'Sky calendar', planisphere: 'Printable planisphere' },
+      translationNote: ['This is an English translation of the', 'Japanese page', '. If the two differ, the Japanese version prevails.'] },
   };
   const L_TEXT = TEXT;
   /** 英語の語数（空白で区切り、英字を含むものを数える。方位の 1 文字も 1 語。記号の ✓ は数えない） */

@@ -1,11 +1,11 @@
 {
   "note": "vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない",
-  "synced_at": "2026-11-05",
+  "synced_at": "2026-11-10",
   "repos": {
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "9ddd199ff6e726c0ca77ea3c620394573d767fc7",
+      "commit": "e3ddae4796d0422916bac0b89badbadb7c1de1a0",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "16502a94872b0d88cf539c5d325b4dc6440ff8c0",
@@ -26,7 +26,7 @@
         "lib/ikukyu.js": "d9ec035b8df59bf1c2b940674f98e83a52484624",
         "lib/iryohi.js": "3f62fda4e4d5efdf4b87bbf17e522d41fd673cf9",
         "lib/iryohi-values.js": "7ab3e79c66a4a95a42826a7a57496bc3f311ebf1",
-        "lib/koko.js": "691f65b29b8b5b84da3a8cef6b2ef924c135e4fb",
+        "lib/koko.js": "07a9214d8dff84d4b8155fb416cf39c9253b47a9",
         "lib/koko-values.js": "410c56ea6fde61ac4be7c953f2be8ecf5a8a7f01",
         "lib/pension-refund.js": "d0b846560e0f12d1ccb0a688182fc83fe7e9cec6",
         "lib/dattai-values.js": "299d7aad0cdebe79d97cd60dcd2fb7784677ad7c",

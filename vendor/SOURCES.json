@@ -75,18 +75,18 @@
     "denki-dai": {
       "url": "https://github.com/YouheiOonuki/denki-dai",
       "ref": "main",
-      "commit": "8c17a0a1574b5cab175fad3a61aea5be668f81c7",
+      "commit": "c58e2875a320025cd40d94119e6f905d46d81191",
       "files": {
         "calc.js": "8773146821cadecea77ecd8a0e518d4a3db03455",
-        "constants.js": "1024df7fc9c514871fbec0af464004b5a3113cd2"
+        "constants.js": "25513b5714ea2d20cafd7f36746be864fd326874"
       }
     },
     "shaho-check": {
       "url": "https://github.com/YouheiOonuki/shaho-check",
       "ref": "main",
-      "commit": "f79cd7c884c05bbbabf5531a02cbfdf4be26e773",
+      "commit": "aed57d8215b9ad31eef0efe66bb99ba15b656f34",
       "files": {
-        "judge.js": "2538abdd79f0ab3a98e3f3ec1c9508bd80de44be"
+        "judge.js": "c1513e3ef40bd78de6f7f1111f170ea6e0d1c44b"
       }
     },
     "hoshizora-night": {

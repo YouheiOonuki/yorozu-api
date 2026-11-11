@@ -6,7 +6,7 @@
 (function (root) {
   'use strict';
 
-  var CHECKED = '2026-09-25';
+  var CHECKED = '2026-11-12';
 
   // 1 単位＝35 単位時間（1 単位時間は 50 分）が標準（高等学校学習指導要領 第1章 第2款 3(1)ア）
   var UNIT_HOURS = 35;

@@ -51,25 +51,25 @@
     "gakko-keisan": {
       "url": "https://github.com/YouheiOonuki/gakko-keisan",
       "ref": "main",
-      "commit": "efa42ea93c6be63798c706ba13dfef768a78afd2",
+      "commit": "ae2bd20c71746038fb4e00733d0f0a12feb27dfe",
       "files": {
         "lib/common.js": "2c80afb80e3c317b40169981756220f6e6fee93a",
         "lib/naishin.js": "76fb057a55d0502ddc7560be672b2ba68abf5d9b",
-        "lib/naishin-values.js": "881ef7399b3dc73a73fd5cb94faaa0c810e874b3",
+        "lib/naishin-values.js": "8fb8e3485f2a8b2bb2ff594cfd473e598bf46f22",
         "lib/shusseki.js": "afc72ac8d1556b106c92fcc1a3546829c31168be",
-        "lib/shusseki-values.js": "c0277ce91b5c624e40eb9cdfbc0d10b3aa338aa0",
+        "lib/shusseki-values.js": "ebaff1d103935978519fdcb66020683f8ee49c66",
         "lib/atonannichi.js": "f1e576c585b3e729c9f4a8d380f1a44a42bdd7b8",
-        "lib/atonannichi-values.js": "0cca6dd30077f16321b3716de408d95b77a0dbcd",
+        "lib/atonannichi-values.js": "2ed5bef8b77e1164c22e2f94c436c90cd6a9ee8f",
         "lib/hensachi.js": "343eabc984d75b1ed353930a5ae0fd7d20361dff"
       }
     },
     "loan-sim": {
       "url": "https://github.com/YouheiOonuki/loan-sim",
       "ref": "main",
-      "commit": "5d50149b602ccff8aa56964d54a48e39088bd479",
+      "commit": "0fbedb9a4e5bf9c50b53260093f06c799bdf9fd1",
       "files": {
         "calc.js": "807424b8856ca2d03ffc639283d91078c5b100ab",
-        "constants.js": "0f4cbd23ce8c23484b0185ed06946269c77a400a"
+        "constants.js": "854d09c50f726c1db2804e2f98ea4169d7f284f8"
       }
     },
     "denki-dai": {

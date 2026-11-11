@@ -5,7 +5,7 @@
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "f62dcbf22409397dd0ab673915fb780d148a5d0c",
+      "commit": "96b45e23686c7b50489a8857e97a9e7e0f0acce8",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "86c59dd3659de00232c2831c60c895ac0b072107",
@@ -21,7 +21,7 @@
         "lib/kyuyo-table-2025.js": "a1bd4aaae2a38c9f3af14243040fafd4de7abd10",
         "lib/kyuyo-table-2026.js": "15783b2621163da6c1711016d3c7fdd484df493a",
         "lib/juminzei.js": "d00647d804d493b3a4bdf62f210c652a01326dc2",
-        "lib/juminzei-values.js": "d63c3368f29558b3f34fc9a00228bd1046428fdc",
+        "lib/juminzei-values.js": "f658bd6e34faf4600b055c5e3723fbc3da58de7a",
         "lib/kaitei-values.js": "5b0bbdc9cc96e5caa4627f8655ecc3c5ddb2db55",
         "lib/ikukyu.js": "d9ec035b8df59bf1c2b940674f98e83a52484624",
         "lib/iryohi.js": "3f62fda4e4d5efdf4b87bbf17e522d41fd673cf9",

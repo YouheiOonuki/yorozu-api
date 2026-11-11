@@ -84,9 +84,9 @@
     "shaho-check": {
       "url": "https://github.com/YouheiOonuki/shaho-check",
       "ref": "main",
-      "commit": "26d1d4bcda6755c45c4f20b00796d94faa7367ef",
+      "commit": "f79cd7c884c05bbbabf5531a02cbfdf4be26e773",
       "files": {
-        "judge.js": "441a848ad3ffc822652694a441f182dede757f60"
+        "judge.js": "2538abdd79f0ab3a98e3f3ec1c9508bd80de44be"
       }
     },
     "hoshizora-night": {

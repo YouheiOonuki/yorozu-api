@@ -6,7 +6,7 @@
 (function (root) {
   'use strict';
 
-  var CHECKED = '2026-09-25';
+  var CHECKED = '2026-11-12';
   // 見直しの期限（月）。条文の所在だけで、画面の計算に使う値は無いので、check-site の既定（12 か月）より長くする
   var STALE_MONTHS = 36;
 

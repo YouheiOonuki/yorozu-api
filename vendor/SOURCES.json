@@ -1,11 +1,11 @@
 {
   "note": "vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない",
-  "synced_at": "2026-11-11",
+  "synced_at": "2026-11-12",
   "repos": {
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "f257f037c2d88559145efd58743704cab0111c92",
+      "commit": "8d9e3fc51f718ddfc10825a2b6116d5e7d99e970",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "86c59dd3659de00232c2831c60c895ac0b072107",
@@ -32,9 +32,9 @@
         "lib/dattai-values.js": "3b37477f0da3ea1e7ee138b99f3e1dc6e3e31133",
         "lib/kaitei.js": "0d64437d6debd209c00c05b1dbf57587664fed80",
         "lib/take-home.js": "758604270525867839c9fbc68d992fae0878aae2",
-        "lib/take-home-values.js": "d58a17013e3425f8704b02b25e712347212aaa32",
+        "lib/take-home-values.js": "d94df47d187d4a4043220dae2daa26e40b3ac4fb",
         "lib/yobosesshu.js": "02e82568841f81335eb737c5189a43fe0bbe4148",
-        "lib/yobosesshu-values.js": "c9500364947e2ec823442fe39fe9dba57b2f5f28"
+        "lib/yobosesshu-values.js": "1e37075f637b7f9a5d7786d8c7bd585cfe7c4524"
       }
     },
     "gengo": {
@@ -66,7 +66,7 @@
     "loan-sim": {
       "url": "https://github.com/YouheiOonuki/loan-sim",
       "ref": "main",
-      "commit": "0fbedb9a4e5bf9c50b53260093f06c799bdf9fd1",
+      "commit": "dee22634d44874604013546a4f1d13571c296ada",
       "files": {
         "calc.js": "807424b8856ca2d03ffc639283d91078c5b100ab",
         "constants.js": "854d09c50f726c1db2804e2f98ea4169d7f284f8"
@@ -84,7 +84,7 @@
     "shaho-check": {
       "url": "https://github.com/YouheiOonuki/shaho-check",
       "ref": "main",
-      "commit": "aed57d8215b9ad31eef0efe66bb99ba15b656f34",
+      "commit": "d431ed65069b630b2ed68da88f12734a66bd8a5f",
       "files": {
         "judge.js": "c1513e3ef40bd78de6f7f1111f170ea6e0d1c44b"
       }

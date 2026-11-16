@@ -126,14 +126,14 @@
       label: '年齢計算ニ関スル法律（明治35年法律第50号）',
       source: 'e-Gov 法令検索「年齢計算ニ関スル法律」',
       url: 'https://laws.e-gov.go.jp/law/135AC1000000050',
-      checked: CHECKED
+      checked: '2026-11-16'   // 2026-11-16 に e-Gov 法令 API v2 で取り直して同じ（Q-255）
     },
     civilCode143: {
       value: '起算日に応当する日の前日に満了する。最後の月に応当する日がないときは、その月の末日に満了する',
       label: '民法第143条（暦による期間の計算）',
       source: 'e-Gov 法令検索「民法」第百四十三条',
       url: 'https://laws.e-gov.go.jp/law/129AC0000000089',
-      checked: CHECKED
+      checked: '2026-11-16'   // 2026-11-16 に e-Gov 法令 API v2 で取り直して同じ（Q-255）
     },
     schoolEntry: G.VALUES.schoolEntry,
     schoolYear: G.VALUES.schoolYear,

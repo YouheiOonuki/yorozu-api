@@ -1,16 +1,16 @@
 {
   "note": "vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない",
-  "synced_at": "2026-11-14",
+  "synced_at": "2026-11-16",
   "repos": {
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "8d9e3fc51f718ddfc10825a2b6116d5e7d99e970",
+      "commit": "c41e56c11603560db2028d1d98bcefd301a95a55",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "86c59dd3659de00232c2831c60c895ac0b072107",
         "lib/kuriage.js": "8300545f6d00740a5c50c133f52e34f2e103eee1",
-        "lib/kuriage-values.js": "34b0c95bbb89f12d48705297e916f009d1945073",
+        "lib/kuriage-values.js": "03306c21ec623d42618a9ff2783bfb13f426eff6",
         "lib/shienkin.js": "bee85d38638f48b7db86a2255c218bd31e418e87",
         "lib/shienkin-values.js": "34223ff2309866eafc158193395e7d8d985a0882",
         "lib/ikukyu-values.js": "41cedfc8064382ab0a9327c5960970948ec7e334",
@@ -40,11 +40,11 @@
     "gengo": {
       "url": "https://github.com/YouheiOonuki/gengo",
       "ref": "main",
-      "commit": "20b2bd2f324766a54d05106c1a80c4fc34b77026",
+      "commit": "c488c752aa01a98092c59b933b6d1c5915ec2fa8",
       "files": {
         "calc.js": "b2fd8fb49d5c31f4fc8ccb9e164f658c5f413923",
-        "constants.js": "cabf68782b2a46faa2bf3dfec228f5b245f324a2",
-        "gakunen-calc.js": "63dfe8de3dc5cbca8503c1a53c623e7f1886e806",
+        "constants.js": "19abe18a4133d5908c833307672e56e87641e918",
+        "gakunen-calc.js": "3431dc7acb4146c108b7701990492557e5f3e5aa",
         "yakudoshi-calc.js": "cf1143202e60a0b813f13b7addabc08d18b03a17"
       }
     },
@@ -84,7 +84,7 @@
     "shaho-check": {
       "url": "https://github.com/YouheiOonuki/shaho-check",
       "ref": "main",
-      "commit": "d431ed65069b630b2ed68da88f12734a66bd8a5f",
+      "commit": "8d856fb9a127bc866197d170a323b9816b45f092",
       "files": {
         "judge.js": "c1513e3ef40bd78de6f7f1111f170ea6e0d1c44b"
       }

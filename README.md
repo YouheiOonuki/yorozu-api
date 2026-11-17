@@ -16,11 +16,40 @@
 | `POST /v1/<計算>`（JSON の本文） | 同じ。入力を URL に載せたくないときはこちら |
 | `GET /v1/kogaku/categories?period=r8` | 高額療養費の所得区分（`cat`）の表 |
 | `GET /v1/shienkin/model` | 子ども・子育て支援金の国のモデル試算 |
+| `GET /v1/now` | 次の改定（今日より後の最初の施行日。制度の改定カレンダーから） |
 | `POST /mcp` | MCP（Streamable HTTP。JSON で答える。状態を持たない） |
 
 例: `GET /v1/kogaku?period=r8&cat=u&rows.0.cost=1000000&rows.0.age=u70&rows.0.place=in&rows.0.rate=0.3` → `result.limit` 92,940・`result.refund` 207,060（ACCEPTANCE 2.1 の検算 1 行目）
 
-MCP のツール: `calc_year_end_tax_adjustment`・`calc_residence_tax`・`calc_high_cost_medical_expense`・`list_high_cost_medical_categories`・`calc_pension_start_age`・`calc_child_support_levy`・`calc_consumption_tax_after_20pct_rule`・`convert_japanese_era`・`school_grade_by_birthdate`（名前は英語、説明は日英）。
+計算の口と MCP のツール（名前は英語、説明は日英）:
+
+| 口 | MCP のツール | 計算 |
+|------|------|------|
+| `/v1/nenmatsu` | `calc_year_end_tax_adjustment` | 年末調整（所得税の年税額と還付・不足） |
+| `/v1/juminzei` | `calc_residence_tax` | 住民税（個人住民税の年税額・非課税の判定） |
+| `/v1/kogaku` | `calc_high_cost_medical_expense` | 高額療養費（月の自己負担の上限と払い戻し） |
+| `/v1/kogaku/categories` | `list_high_cost_medical_categories` | 高額療養費の所得区分の表 |
+| `/v1/nenkin-kuriage` | `calc_pension_start_age` | 年金の繰上げ・繰下げ（受け取り始める年齢と月額） |
+| `/v1/shienkin` | `calc_child_support_levy` | 子ども・子育て支援金（給与から引かれる額） |
+| `/v1/invoice` | `calc_consumption_tax_after_20pct_rule` | インボイス 2割特例の後の消費税（2割特例・3割特例・簡易課税・本則の比較） |
+| `/v1/wareki` | `convert_japanese_era` | 和暦と西暦の変換（元号） |
+| `/v1/gakunen` | `school_grade_by_birthdate` | 学年（生年月日から、その年度の学年） |
+| `/v1/tonight` | `tonight_sky_japan` | 今夜の星空（都道府県庁の場所の 21 時） |
+| `/v1/ikukyu` | `calc_childcare_leave_benefit` | 育休・産休の給付（出産手当金・育児休業給付金など） |
+| `/v1/iryohi` | `calc_medical_expense_deduction` | 医療費控除（控除額と戻る税金の目安） |
+| `/v1/koko` | `calc_high_school_tuition_support` | 高校の授業料（就学支援金と都道府県の上乗せのあとの自己負担） |
+| `/v1/dattai` | `calc_pension_lump_sum_withdrawal` | 脱退一時金（外国人の厚生年金・国民年金） |
+| `/v1/kaitei` | `calc_upcoming_system_changes` | 制度の改定カレンダー（次に変わる日） |
+| `/v1/take-home` | `calc_take_home_pay` | 手取り（月給・賞与から、社会保険料と税を引いた額） |
+| `/v1/yobosesshu` | `calc_childhood_vaccination_schedule` | 子どもの定期の予防接種（生年月日から日付の一覧） |
+| `/v1/naishin` | `calc_high_school_naishin` | 内申点（公立高校入試の調査書点・総合点） |
+| `/v1/shusseki` | `calc_attendance_limit` | 出席日数（休める上限と残り） |
+| `/v1/atonannichi` | `calc_days_until` | ○○まであと何日（日数・毎年の日・期間の残り） |
+| `/v1/hensachi` | `calc_deviation_score` | 偏差値（点数・平均点・標準偏差から） |
+| `/v1/loan` | `calc_mortgage_repayment` | 住宅ローンの返済（毎月の返済額・利息の総額・完済まで） |
+| `/v1/denki` | `calc_appliance_electricity_cost` | 家電の電気代（1 か月・1 年の電力量と金額） |
+| `/v1/denki-kaikae` | `calc_appliance_replacement_saving` | 家電の買い替え（年間の電気代の差と、元が取れる年数） |
+| `/v1/shaho` | `calc_social_insurance_eligibility` | 社会保険（厚生年金・健康保険）の加入判定 |
 
 ## 計算はサイトと同じもの（手で分岐しない）
 

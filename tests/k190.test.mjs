@@ -36,3 +36,16 @@ test('ツールの集合が /v1 の index・MCP の tools/list と一致', async
   assert.deepEqual([...listed].sort(), [...new Set(fromIndex)].sort());
   assert.deepEqual([...listed].sort(), mcpTools().map((t) => t.name).sort());
 });
+
+test('口の一覧が README・server.json・コードで同じ集合（REST の /v1/… と MCP のツール。QUEUE Q-400）', async () => {
+  const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
+  const ix = await index();
+  const restCode = new Set(['/v1', '/v1/now', ...ix.calcs.flatMap((c) => ['/v1/' + c.name, ...(c.extra || []).map((u) => new URL(u).pathname)])]);
+  const restReadme = new Set([...readme.matchAll(/`(?:(?:GET|POST) )?(\/v1(?:\/[a-z-]+)*)(?:[?`])/g)].map((m) => m[1]));
+  const toolsReadme = new Set([...readme.matchAll(/`([a-z]+(?:_[a-z0-9]+)+)`/g)].map((m) => m[1]));
+  const toolsServer = server._meta['io.modelcontextprotocol.registry/publisher-provided'].tools;
+  const sorted = (s) => [...s].sort();
+  assert.deepEqual(sorted(restReadme), sorted(restCode), 'README の /v1/… とコードの口');
+  assert.deepEqual(sorted(toolsReadme), sorted(mcpTools().map((t) => t.name)), 'README の MCP のツールと tools/list');
+  assert.deepEqual(sorted(toolsReadme), sorted(toolsServer), 'README の MCP のツールと server.json');
+});

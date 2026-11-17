@@ -388,6 +388,26 @@
   /** 曜日（0 = 日曜）。グレゴリオ暦で数える（明治5年以前の旧暦の日付には使わない） */
   function weekdayOf(o) { return new Date(Date.UTC(o.y, o.m - 1, o.d)).getUTCDay(); }
 
+  /**
+   * きょうの年度の「何歳は何年生」（学年早見表の上の早見。行は fromAge〜toAge 歳、既定 6〜18）
+   * a: 4 月 2 日〜きょうが誕生日の人（今年度の誕生日を迎えた）、b: あした〜4 月 1 日が誕生日の人（まだ）。きょうが 4 月 1 日（年度の初日）なら a は無い（null）
+   * 学年は gakunen-calc.js の gradeNumber に、その組の生まれた日（a は fy−age 年 4 月 2 日、b は fy−age 年 4 月 1 日）を入れて出す。年度が替わると行も替わる
+   * @returns {{fy:number, rows:Array<{age:number, a:({n:number,key:(string|null)}|null), b:{n:number,key:(string|null)}}>}}
+   */
+  function gradeByAge(today, fromAge, toAge) {
+    var fy = G.fiscalYearOf(today);
+    var keyOf = {};
+    G.gradeTable(fy).forEach(function (r) { keyOf[r.n] = r.key; });
+    var noA = today.m === 4 && today.d === 1;   // 4 月 2 日〜きょう が空
+    var lo = fromAge === undefined ? 6 : fromAge, hi = toAge === undefined ? 18 : toAge;
+    var rows = [];
+    for (var age = lo; age <= hi; age++) {
+      var na = G.gradeNumber({ y: fy - age, m: 4, d: 2 }, fy), nb = G.gradeNumber({ y: fy - age, m: 4, d: 1 }, fy);
+      rows.push({ age: age, a: noA ? null : { n: na, key: keyOf[na] || null }, b: { n: nb, key: keyOf[nb] || null } });
+    }
+    return { fy: fy, rows: rows };
+  }
+
   var api = {
     isLeap: isLeap, validDate: validDate, parseYmd: parseYmd, ymdStr: ymdStr, cmp: cmp, addDays: addDays,
     ERAS: ERAS, eraByKey: eraByKey, lastYearOf: lastYearOf, eraOf: eraOf, erasOfYear: erasOfYear, PRE_MEIJI_ERAS: PRE, preErasOfYear: preErasOfYear,
@@ -395,7 +415,7 @@
     toSeireki: toSeireki, parseJaNumber: parseJaNumber, parseInput: parseInput, inputToDate: inputToDate,
     ageAt: ageAt, anniversary: anniversary, isHayaumare: G.isHayaumare, schoolEntryYear: G.schoolEntryYear,
     schoolHistory: G.schoolHistory, gradeAt: G.gradeAt, eto: eto, ehou: ehou, ageTable: ageTable,
-    fiscalYearOf: G.fiscalYearOf, gradeNumber: G.gradeNumber, gradeTable: G.gradeTable, resumeHistory: G.resumeHistory,
+    fiscalYearOf: G.fiscalYearOf, gradeNumber: G.gradeNumber, gradeTable: G.gradeTable, resumeHistory: G.resumeHistory, gradeByAge: gradeByAge,
     kazoeAge: Y.kazoeAge, yakuTable: Y.yakuTable, yakuOf: Y.yakuOf, toshiiwaiTable: Y.toshiiwaiTable, toshiiwaiOf: Y.toshiiwaiOf,
     kanjiNumber: kanjiNumber, kaikiName: kaikiName, memorialDay: memorialDay, kaikiList: kaikiList, chuinList: chuinList,
     kaikiYearTable: kaikiYearTable, weekdayOf: weekdayOf

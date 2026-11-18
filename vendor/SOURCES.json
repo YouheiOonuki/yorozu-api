@@ -5,7 +5,7 @@
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "031fdce6d74907d702aabd4aff5fe384b09129cb",
+      "commit": "26693ba3ff6990e0b6523b3aacf0c9e95bee98fc",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "86c59dd3659de00232c2831c60c895ac0b072107",
@@ -40,7 +40,7 @@
     "gengo": {
       "url": "https://github.com/YouheiOonuki/gengo",
       "ref": "main",
-      "commit": "5f38b4be0be2b79665c5a8fd9f97a90337f86207",
+      "commit": "83bbf3ea3e8981372600ecc8949a518f05fe4908",
       "files": {
         "calc.js": "43301f9683bdbc05887b58a4085629208fc90791",
         "constants.js": "19abe18a4133d5908c833307672e56e87641e918",
@@ -51,14 +51,14 @@
     "gakko-keisan": {
       "url": "https://github.com/YouheiOonuki/gakko-keisan",
       "ref": "main",
-      "commit": "575ae96d6c7499b00424ac56f2f2c894aa30c6ba",
+      "commit": "8e91bd870157f4cbd3056d561d3fc708f9a66d67",
       "files": {
         "lib/common.js": "2c80afb80e3c317b40169981756220f6e6fee93a",
         "lib/naishin.js": "76fb057a55d0502ddc7560be672b2ba68abf5d9b",
         "lib/naishin-values.js": "8fb8e3485f2a8b2bb2ff594cfd473e598bf46f22",
         "lib/shusseki.js": "476717a9d6bdc06303bea4210d200dd554e331b2",
         "lib/shusseki-values.js": "ebaff1d103935978519fdcb66020683f8ee49c66",
-        "lib/atonannichi.js": "f1e576c585b3e729c9f4a8d380f1a44a42bdd7b8",
+        "lib/atonannichi.js": "e167138ca3c50a5133f5e426d7b358ea55a3b845",
         "lib/atonannichi-values.js": "2ed5bef8b77e1164c22e2f94c436c90cd6a9ee8f",
         "lib/hensachi.js": "ec3609fe54f2fa61119d96b245d9fb3e3b826540"
       }
@@ -66,7 +66,7 @@
     "loan-sim": {
       "url": "https://github.com/YouheiOonuki/loan-sim",
       "ref": "main",
-      "commit": "d77aaaa18ad238c242c46a74ab9a92e2247320fc",
+      "commit": "55390ff17a67c6512daae228e3877d9528ae26c8",
       "files": {
         "calc.js": "807424b8856ca2d03ffc639283d91078c5b100ab",
         "constants.js": "39806176025e25ba85da9fc406578d811b96ade4"
@@ -75,7 +75,7 @@
     "denki-dai": {
       "url": "https://github.com/YouheiOonuki/denki-dai",
       "ref": "main",
-      "commit": "bbd7791922934c6443481c7fd00e238b53406092",
+      "commit": "cd694d72fd92ec66a7b9791d96bbbc6f775a675f",
       "files": {
         "calc.js": "0f75f3c2c1bf3b3bac6568b76cd38f62b13555f3",
         "constants.js": "a94f13ea8cb6892b4f5c2810180caca747c7c94c"
@@ -84,7 +84,7 @@
     "shaho-check": {
       "url": "https://github.com/YouheiOonuki/shaho-check",
       "ref": "main",
-      "commit": "bd2fa137076f48df680135008338de35d0eee942",
+      "commit": "60bca997dd433f7dda0779958a8d93d982b1a5f0",
       "files": {
         "judge.js": "21552ce405408f41569e32b72efb6bd07f2fc6c6"
       }
@@ -92,12 +92,12 @@
     "hoshizora-night": {
       "url": "https://github.com/YouheiOonuki/hoshizora-night",
       "ref": "main",
-      "commit": "9aa7b48eb8a4194b5c55d108a815ad3601682f7e",
+      "commit": "e954b382bd3dc3dba23adc5bb39aed3a97745925",
       "files": {
         "engine/astro.js": "b6c6aa9bafb6937864f9eee6d69ecaa9088eeb61",
         "engine/data.js": "81c073063a98748ada31926c98aae20980663536",
         "render/prefectures.js": "2da7547b67dd3d168c0bbe5a0cdec1175bc720e4",
-        "render/look.js": "9f398299715b97ab9fc736a672ec58e6c200f5f2"
+        "render/look.js": "b5a379783d62afa49e06e253bdad4f72ac5e6f9e"
       }
     }
   }

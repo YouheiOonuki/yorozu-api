@@ -101,6 +101,14 @@
     return r;
   }
 
+  /**
+   * 保存が空で開いたときの 1 行（Q-434）: お正月。日付は今日かそれより後で、いちばん近い 1 月 1 日、毎年くる日。
+   * 暦の事実なので置ける（夏休みなど学校ごとに違う日は置かない）
+   */
+  function defaultMain(todayN) {
+    return { name: 'お正月', date: iso(nextYearly(fromYmd(ymd(todayN).y, 1, 1), todayN)), yearly: true, end: '' };
+  }
+
   /** 行を正規化する（保存・ファイル読み込みのときも通す） */
   function normalizeItem(x) {
     x = x && typeof x === 'object' ? x : {};
@@ -141,7 +149,7 @@
   var api = {
     MAX_SHEET_DAYS: MAX_SHEET_DAYS, WEEKS_PER_PAGE: WEEKS_PER_PAGE, WD: WD,
     parse: parse, ymd: ymd, iso: iso, today: today, isLeap: isLeap, nextYearly: nextYearly, label: label,
-    compute: compute, normalizeItem: normalizeItem, sortItems: sortItems, sheet: sheet,
+    compute: compute, defaultMain: defaultMain, normalizeItem: normalizeItem, sortItems: sortItems, sheet: sheet,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Atonannichi = api;

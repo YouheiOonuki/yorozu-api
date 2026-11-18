@@ -73,6 +73,7 @@ npm test
 1. GitHub に `YouheiOonuki/yorozu-api` を作り、このフォルダを push する
 2. Cloudflare のアカウントが **Workers Free プラン**のままか確かめる（ダッシュボード → Workers & Pages → Plans）
 3. 手元で `npm install` → `npx wrangler login`（ブラウザで Cloudflare に許可）→ `npm run deploy`（テストが通ったときだけデプロイ）
+   - `npm run deploy` は頭で `node tools/sync-lib.mjs --drift` を回し、写した lib が元のリポジトリの main より古ければ止まる（終了コード 1）。`node tools/sync-lib.mjs` で写し直し、`npm test` を通してからもう一度
    - ダッシュボードから行うなら: Workers & Pages → Create → Import a repository → `yorozu-api` を選ぶ（Build command は空、Deploy command は `npx wrangler deploy`）
 4. 出てきた URL（`https://yorozu-api.<サブドメイン>.workers.dev`）で `API_BASE=… node --test tests/acceptance.test.mjs` を 1 回
 5. Claude（設定 → コネクタ → カスタムコネクタを追加 → URL に `…/mcp`）か ChatGPT（開発者モードのコネクタ）から 1 回呼び、`calc_high_cost_medical_expense`（period r8・cat u・医療費 100 万円・3 割）が 92,940 円を返すことを見る

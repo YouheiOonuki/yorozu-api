@@ -3,7 +3,8 @@
 //   node tools/sync-lib.mjs --seido-keisan=/path/to/seido-keisan --gengo=/path/to/gengo --ref=<commit>
 //   node tools/sync-lib.mjs --check               vendor/ の中身が SOURCES.json の git の blob と同じか（手で直していないか）だけを確かめる
 //   node tools/sync-lib.mjs --drift               写した commit のあと、元のリポジトリの main で lib が変わっていないか（違いが 1 つでも在れば終了コード 1。npm run deploy の頭で回す。K150 D338・Q-492）
-//                                                 記録が無い・元の置き場が無い repo は比べず、最後に「比べていない: N repo（名前）」を 1 行出す（終了コードは変えない。Q-517）
+//                                                 違いが 0 なら「OK: 比べた N repo の写しは…」（比べた repo が 0 なら OK は出さない。Q-543）
+//                                                 記録が無い・元の置き場が無い・git が落ちた（main を引けない）repo は比べず、最後に「比べていない: N repo（名前〈理由〉）」を 1 行出す（終了コードは変えない。Q-517・Q-543）
 // vendor/ は手で直さない。計算を直すときはサイトのリポジトリで直してから、これを走らせ直す（手で分岐しない）。
 // 写した元の commit と各ファイルの git の blob の SHA-1 を vendor/SOURCES.json に記録する（GitHub の同じ commit と突き合わせられる）
 import { execFileSync } from 'node:child_process';
@@ -92,35 +93,40 @@ export function check() {
 /**
  * 写した commit と、元のリポジトリの今の main の差（yorozu-plans ROADMAP 7.69.1 D338）。
  * サイトの lib や値を直したのに API の写しが古いまま、を見つける。
- * 返りは { diffs: [{ repo, file, pinned, now }], skipped: [{ repo, reason }] }。skipped は比べられなかった repo（Q-517: 黙って飛ばさない）
+ * 返りは { diffs: [{ repo, file, pinned, now }], compared: [repo], skipped: [{ repo, reason }] }。skipped は比べられなかった repo（Q-517: 黙って飛ばさない）
+ * main を引けない・git が動かない repo は違いにせず skipped へ（理由「git が落ちた」）。main を引けてファイルだけ無い時は違い（(main に無い)）。Q-543
  */
 export function drift() {
   const S = JSON.parse(readFileSync(join(root, 'vendor', 'SOURCES.json'), 'utf8'));
-  const diffs = [], skipped = [];
+  const diffs = [], compared = [], skipped = [];
   for (const [repo, files] of Object.entries(FILES)) {
     const rec = S.repos[repo];
     const dir = resolve(arg(repo, join(root, '..', repo)));
     if (!rec) { skipped.push({ repo, reason: '記録が無い' }); continue; }
     if (!existsSync(dir)) { skipped.push({ repo, reason: '置き場が無い' }); continue; }
+    const git = (...a) => execFileSync('git', ['-C', dir, ...a], { stdio: ['ignore', 'pipe', 'pipe'] }).toString().trim();
+    try { git('rev-parse', '--verify', '--quiet', 'main^{commit}'); } catch { skipped.push({ repo, reason: 'git が落ちた' }); continue; }
+    compared.push(repo);
     for (const f of files) {
       let now = '';
-      try { now = execFileSync('git', ['-C', dir, 'rev-parse', 'main:' + f]).toString().trim(); } catch { now = '(main に無い)'; }
+      try { now = git('rev-parse', 'main:' + f); } catch { now = '(main に無い)'; }
       if (now !== rec.files[f]) diffs.push({ repo, file: f, pinned: rec.commit.slice(0, 7), now: now.slice(0, 7) });
     }
   }
-  return { diffs, skipped };
+  return { diffs, compared, skipped };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   if (process.argv.includes('--drift')) {
     // 差が 1 つでも在れば終了コード 1（npm run deploy を止める。Q-492）。node tools/sync-lib.mjs で写し直し、テストを回して deploy する
     // 本館の check.ps1 も同じものを呼ぶが、終了コードは見ない（本館の配信は API の写しの古さで止めない。ROADMAP 7.244 の答え 13）
-    // 比べられなかった repo は最後に 1 行で言い、終了コードは変えない（写した commit は記録に在り、テストは写しで通る。分からないのは古さだけ。Q-517）
-    const { diffs, skipped } = drift();
+    // 比べられなかった repo は最後に理由つきの 1 行で言い、終了コードは変えない（写した commit は記録に在り、テストは写しで通る。分からないのは古さだけ。Q-517・Q-543）
+    // OK は比べた数つきで言い、比べた repo が 0 なら言わない（Q-543）
+    const { diffs, compared, skipped } = drift();
     for (const x of diffs) console.log(`警告: ${x.repo}/${x.file} が main で変わっている（写したのは ${x.pinned}）。node tools/sync-lib.mjs で写し直す`);
-    if (!diffs.length) console.log('OK: 写した lib は元のリポジトリの main と同じ');
-    else process.exitCode = 1;
-    if (skipped.length) console.log(`比べていない: ${skipped.length} repo（${skipped.map((x) => x.repo).join('・')}）`);
+    if (diffs.length) process.exitCode = 1;
+    else if (compared.length) console.log(`OK: 比べた ${compared.length} repo の写しは、元のリポジトリの main と同じ`);
+    if (skipped.length) console.log(`比べていない: ${skipped.length} repo（${skipped.map((x) => `${x.repo}〈${x.reason}〉`).join('・')}）`);
   } else if (process.argv.includes('--check')) {
     const bad = check();
     for (const b of bad) console.error(b);

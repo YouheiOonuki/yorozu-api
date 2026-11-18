@@ -37,7 +37,7 @@ function commit(dir, init) {
 
 const runDrift = (dirs) => spawnSync(process.execPath, [script, '--drift', ...Object.entries(dirs).map(([r, d]) => '--' + r + '=' + d)], { encoding: 'utf8' });
 
-// 仮の repo は 1 組だけ作り、下の 2 つの test で順に使う（同じファイルの test は上から順に走る）
+// 仮の repo は 1 組だけ作り、下の 4 つの test で順に使う（同じファイルの test は上から順に走る）
 let fake;
 before(() => { fake = fakeRepos(); });
 after(() => { rmSync(fake.base, { recursive: true, force: true }); });
@@ -46,6 +46,20 @@ test('--drift: 写した lib と元の main が揃っていれば終了コード
   const r = runDrift(fake.dirs);
   assert.equal(r.status, 0, r.stdout + r.stderr);
   assert.match(r.stdout, /^OK: /m);
+});
+
+test('--drift: 全部の repo を比べた時は「比べていない」を出さない（Q-517）', () => {
+  const r = runDrift(fake.dirs);
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.doesNotMatch(r.stdout, /比べていない/);
+});
+
+test('--drift: 元の置き場が無い repo は比べず、終了コード 0 のまま「比べていない」を 1 行出す（Q-517）', () => {
+  const [repo] = Object.keys(FILES);
+  const r = runDrift({ ...fake.dirs, [repo]: join(fake.base, 'no-such-dir') });
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  const lines = r.stdout.split('\n').filter((l) => l.startsWith('比べていない: '));
+  assert.deepEqual(lines.map((l) => l.trim()), [`比べていない: 1 repo（${repo}）`], r.stdout);
 });
 
 test('--drift: 写した後に元の main を 1 文字変えると終了コード 1、変えたファイルだけを警告に出す', () => {

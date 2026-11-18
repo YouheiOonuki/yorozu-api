@@ -3,6 +3,7 @@
 //   node tools/sync-lib.mjs --seido-keisan=/path/to/seido-keisan --gengo=/path/to/gengo --ref=<commit>
 //   node tools/sync-lib.mjs --check               vendor/ の中身が SOURCES.json の git の blob と同じか（手で直していないか）だけを確かめる
 //   node tools/sync-lib.mjs --drift               写した commit のあと、元のリポジトリの main で lib が変わっていないか（違いが 1 つでも在れば終了コード 1。npm run deploy の頭で回す。K150 D338・Q-492）
+//                                                 記録が無い・元の置き場が無い repo は比べず、最後に「比べていない: N repo（名前）」を 1 行出す（終了コードは変えない。Q-517）
 // vendor/ は手で直さない。計算を直すときはサイトのリポジトリで直してから、これを走らせ直す（手で分岐しない）。
 // 写した元の commit と各ファイルの git の blob の SHA-1 を vendor/SOURCES.json に記録する（GitHub の同じ commit と突き合わせられる）
 import { execFileSync } from 'node:child_process';
@@ -90,32 +91,36 @@ export function check() {
 
 /**
  * 写した commit と、元のリポジトリの今の main の差（yorozu-plans ROADMAP 7.69.1 D338）。
- * サイトの lib や値を直したのに API の写しが古いまま、を見つける。返りは [{ repo, file, pinned, now }]（差が無ければ空）
+ * サイトの lib や値を直したのに API の写しが古いまま、を見つける。
+ * 返りは { diffs: [{ repo, file, pinned, now }], skipped: [{ repo, reason }] }。skipped は比べられなかった repo（Q-517: 黙って飛ばさない）
  */
 export function drift() {
   const S = JSON.parse(readFileSync(join(root, 'vendor', 'SOURCES.json'), 'utf8'));
-  const out = [];
+  const diffs = [], skipped = [];
   for (const [repo, files] of Object.entries(FILES)) {
     const rec = S.repos[repo];
     const dir = resolve(arg(repo, join(root, '..', repo)));
-    if (!rec || !existsSync(dir)) continue;
+    if (!rec) { skipped.push({ repo, reason: '記録が無い' }); continue; }
+    if (!existsSync(dir)) { skipped.push({ repo, reason: '置き場が無い' }); continue; }
     for (const f of files) {
       let now = '';
       try { now = execFileSync('git', ['-C', dir, 'rev-parse', 'main:' + f]).toString().trim(); } catch { now = '(main に無い)'; }
-      if (now !== rec.files[f]) out.push({ repo, file: f, pinned: rec.commit.slice(0, 7), now: now.slice(0, 7) });
+      if (now !== rec.files[f]) diffs.push({ repo, file: f, pinned: rec.commit.slice(0, 7), now: now.slice(0, 7) });
     }
   }
-  return out;
+  return { diffs, skipped };
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   if (process.argv.includes('--drift')) {
     // 差が 1 つでも在れば終了コード 1（npm run deploy を止める。Q-492）。node tools/sync-lib.mjs で写し直し、テストを回して deploy する
     // 本館の check.ps1 も同じものを呼ぶが、終了コードは見ない（本館の配信は API の写しの古さで止めない。ROADMAP 7.244 の答え 13）
-    const d = drift();
-    for (const x of d) console.log(`警告: ${x.repo}/${x.file} が main で変わっている（写したのは ${x.pinned}）。node tools/sync-lib.mjs で写し直す`);
-    if (!d.length) console.log('OK: 写した lib は元のリポジトリの main と同じ');
+    // 比べられなかった repo は最後に 1 行で言い、終了コードは変えない（写した commit は記録に在り、テストは写しで通る。分からないのは古さだけ。Q-517）
+    const { diffs, skipped } = drift();
+    for (const x of diffs) console.log(`警告: ${x.repo}/${x.file} が main で変わっている（写したのは ${x.pinned}）。node tools/sync-lib.mjs で写し直す`);
+    if (!diffs.length) console.log('OK: 写した lib は元のリポジトリの main と同じ');
     else process.exitCode = 1;
+    if (skipped.length) console.log(`比べていない: ${skipped.length} repo（${skipped.map((x) => x.repo).join('・')}）`);
   } else if (process.argv.includes('--check')) {
     const bad = check();
     for (const b of bad) console.error(b);

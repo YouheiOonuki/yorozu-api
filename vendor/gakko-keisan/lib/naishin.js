@@ -121,14 +121,14 @@
     var kasan = Object.prototype.hasOwnProperty.call(P.kasan, String(o.gakku)) ? P.kasan[String(o.gakku)] : 0;
     var res = { pref: 'hyogo', main5: s.main5, jitsugi4: s.jitsugi4, sonaishin: s.sum9, A: A, aMax: P.aMax, kasan: kasan, exam: null };
     var raw = num(o.gaku);
-    if (raw !== null && raw >= 0 && raw <= 500) {
+    if (raw !== null && raw >= 0 && raw <= P.gakuMax) {
       var C = raw * P.cMul;
       res.exam = { raw: raw, C: C, soten: A + C, withKasan: A + C + kasan };
     }
     var target = num(o.target);
     if (target !== null && target > 0) {
       var need = (target - A - kasan) / P.cMul;
-      res.need = { target: target, raw: Math.max(0, need), over: need > 500 };
+      res.need = { target: target, raw: Math.max(0, need), over: need > P.gakuMax };
     }
     return res;
   }
@@ -229,7 +229,53 @@
     return tokyo(o);
   }
 
-  var api = { sums: sums, round2: round2, tokyo: tokyo, kanagawa: kanagawa, hyogo: hyogo, osaka: osaka, saitama: saitama, chiba: chiba, calc: calc };
+  // --- 学力検査の点と合計の得点の線（Q-578）。線の点も満点も calc を呼んで出す（式を写さない） ---
+  var LINE_STEPS = 50;                   // 線は、学力検査の満点の 50 分の 1 ずつ
+  var LINE_KEYS = { small: 1, big: 10 };  // 線の上の印: ← → で 1 点、Shift と ← → で 10 点
+  function examTotal(f) { return function (r) { return r.exam[f]; }; }
+  // 都府県ごとの「合計の得点」（calc の返りの欄。目標〈need〉と同じ物差し）と、学力検査の満点
+  var LINE = {
+    tokyo: { total: examTotal('best1000'), gakuMax: function (r) { return r.rawMax; } },      // 学力検査＋調査書点（1000 点。ESAT-J は足さない）
+    kanagawa: { total: examTotal('S1'), gakuMax: function (r) { return r.gakuMax; } },
+    hyogo: { total: examTotal('withKasan'), gakuMax: function () { return V.PREFS.hyogo.gakuMax; } },
+    osaka: { total: examTotal('total'), gakuMax: function () { return V.PREFS.osaka.gakuMax; } },
+    saitama: { total: examTotal('total'), gakuMax: function () { return V.PREFS.saitama.gakuMax; } },
+    chiba: { total: examTotal('total'), gakuMax: function () { return V.PREFS.chiba.gakuMax; } },
+  };
+  function with_(o, add) { var x = {}; Object.keys(o).forEach(function (k) { x[k] = o[k]; }); Object.keys(add).forEach(function (k) { x[k] = add[k]; }); return x; }
+  /**
+   * 学力検査の点（横）と合計の得点（縦）の線。ほかの欄は o のまま、学力検査の点だけを変えて calc を呼ぶ。
+   * 縦の満点は、評定をすべて 5・学力検査を満点にして calc を呼んだ合計の得点（埼玉は面接も満点）。
+   * 評定が欠けている・学力検査の欄が空か範囲の外なら null
+   */
+  function examLine(pref, o) {
+    var L = LINE[pref] || LINE.tokyo;
+    var r = calc(pref, o);
+    if (!r || !r.exam) return null;
+    var gMax = L.gakuMax(r);
+    var g5 = {};
+    V.SUBJECTS.forEach(function (s) { g5[s.id] = 5; });
+    var sumMax = V.SUBJECTS.length * 5;
+    var top = L.total(calc(pref, with_(o, { g: g5, g2: g5, g3: g5, sum1: sumMax, sum2: sumMax, gaku: gMax, mensetsu: r.mensetsuMax })));
+    var pts = [];
+    for (var i = 0; i <= LINE_STEPS; i++) {
+      var x = gMax * i / LINE_STEPS;
+      pts.push({ x: x, y: L.total(calc(pref, with_(o, { gaku: x }))) });
+    }
+    return { gakuMax: gMax, totalMax: top, points: pts, x: Number(o.gaku), y: L.total(r), need: r.need || null };
+  }
+  /** 学力検査の点を delta 点動かした点（整数。0〜満点に収める）。小数の点は、動かす向きの次の整数から数える（350.5 の ＋1 は 351、−1 は 350） */
+  function gakuStep(gaku, delta, gMax) {
+    var x = num(gaku);
+    if (x === null) return null;
+    var y = delta > 0 ? Math.floor(x) + delta : Math.ceil(x) + delta;
+    return Math.min(gMax, Math.max(0, y));
+  }
+  /** 線の横の割合（0 が左端の 0 点、1 が右端の満点）→ 学力検査の点（整数） */
+  function gakuAt(frac, gMax) { return Math.round(Math.min(1, Math.max(0, frac)) * gMax); }
+
+  var api = { sums: sums, round2: round2, tokyo: tokyo, kanagawa: kanagawa, hyogo: hyogo, osaka: osaka, saitama: saitama, chiba: chiba, calc: calc,
+    LINE_STEPS: LINE_STEPS, LINE_KEYS: LINE_KEYS, examLine: examLine, gakuStep: gakuStep, gakuAt: gakuAt };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Naishin = api;
 })(this);

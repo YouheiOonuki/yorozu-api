@@ -48,6 +48,43 @@
   /** 偏差値 t より上にいる人の割合（0〜1。正規分布の仮定） */
   function upperShare(t) { return 1 - normCdf((t - 50) / 10); }
 
+  // 結果の下の山の図（横は偏差値 20〜80）。数は upperShare だけで出す（画面の「上位の割合」と同じ関数）
+  var BELL = { min: 20, max: 80, ticks: [30, 40, 50, 60, 70] };
+  /** 山の高さ（頂点の偏差値 50 を 1 とする。正規分布の密度の形） */
+  function bellHeight(t) { var z = (t - 50) / 10; return Math.exp(-z * z / 2); }
+  /** 偏差値 t の印の位置（範囲の外は端の 20・80）と、印より上の側の面の割合（＝上位の割合）。t が無ければ null */
+  function bellMark(t) {
+    if (t == null || !isFinite(t)) return null;
+    var x = Math.min(BELL.max, Math.max(BELL.min, t));
+    return { x: x, h: bellHeight(x), share: upperShare(t), edge: t < BELL.min ? 'low' : t > BELL.max ? 'high' : null };
+  }
+
+  // 山の図の上で自分の位置を動かす（Q-428）。印の位置から点数へは scoreFor、点数から印の位置へは hensachi と bellMark
+  /** 印で動かせる点数の範囲（整数）。図の横の端から端（偏差値 20〜80）までで、0 点以上。平均点・標準偏差が使えない・範囲に整数が無ければ null */
+  function bellScoreRange(mean, sd) {
+    var m = num(mean), s = num(sd);
+    if (m === null || s === null || s <= 0) return null;
+    var lo = Math.max(0, Math.ceil(scoreFor(BELL.min, m, s))), hi = Math.floor(scoreFor(BELL.max, m, s));
+    return lo <= hi ? { min: lo, max: hi } : null;
+  }
+  /** 偏差値 t の印の横の割合（0 が左端の 20、1 が右端の 80。範囲の外は端） */
+  function bellFrac(t) { return (Math.min(BELL.max, Math.max(BELL.min, t)) - BELL.min) / (BELL.max - BELL.min); }
+  /** 図の横の割合 → 点数（整数。範囲に収める）。範囲が無ければ null */
+  function bellScoreAt(frac, mean, sd) {
+    var r = bellScoreRange(mean, sd);
+    if (!r) return null;
+    var f = Math.min(1, Math.max(0, frac));
+    var x = Math.round(scoreFor(BELL.min + f * (BELL.max - BELL.min), Number(mean), Number(sd)));
+    return Math.min(r.max, Math.max(r.min, x));
+  }
+  /** 点数を delta 点動かした点数（整数。範囲に収める）。小数の点数は、動かす向きの次の整数から数える（72.4 の ＋1 は 73、−1 は 72） */
+  function bellStep(score, delta, mean, sd) {
+    var r = bellScoreRange(mean, sd), x = num(score);
+    if (!r || x === null) return null;
+    var y = delta > 0 ? Math.floor(x) + delta : Math.ceil(x) + delta;
+    return Math.min(r.max, Math.max(r.min, y));
+  }
+
   /** n 人のうちの順位の目安（正規分布の仮定）。上にいる人数の目安＋1。1〜n に収める */
   function rankEstimate(t, n) {
     var N = Math.floor(num(n));
@@ -91,6 +128,8 @@
 
   var api = {
     hensachi: hensachi, scoreFor: scoreFor, normCdf: normCdf, normInv: normInv, upperShare: upperShare,
+    BELL: BELL, bellHeight: bellHeight, bellMark: bellMark,
+    bellScoreRange: bellScoreRange, bellFrac: bellFrac, bellScoreAt: bellScoreAt, bellStep: bellStep,
     rankEstimate: rankEstimate, fromRank: fromRank, parseScores: parseScores, stats: stats, rankInList: rankInList,
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

@@ -40,6 +40,21 @@
     return { base: base, need: need, allowed: allowed, absent: absent, remain: remain, over: remain < 0, rate: base > 0 ? (base - absent) / base : null };
   }
 
+  // 結果の下の升目（升は授業 1 回）。数は limit の返り値だけから分ける。升の数は出席しなければならない回数（欠席に数えない回数を引いた数）
+  var GRID_MAX = 400;
+  /**
+   * 並びは 休んだ（absent）→ あと休める（remain）→ 残り（rest。休むと割合を下回る分）。上限を超えて休んだ分は over（absent の後ろ）
+   * @returns {{size, absent, remain, rest, over} | null}  升が 0 個か GRID_MAX を超えるときは null
+   */
+  function grid(l) {
+    if (!l || l.base <= 0 || l.base > GRID_MAX) return null;
+    var took = Math.min(l.absent, l.base);
+    var absent = Math.min(took, l.allowed);
+    var over = took - absent;
+    var remain = Math.max(0, l.remain);
+    return { size: l.base, absent: absent, remain: remain, rest: l.base - absent - over - remain, over: over };
+  }
+
   /** 単位数から 1 年の授業の回数（1 単位＝35 単位時間が標準） */
   function hoursFromUnits(units) {
     var u = num(units);
@@ -61,7 +76,7 @@
     return out;
   }
 
-  var api = { ratioOf: ratioOf, limit: limit, hoursFromUnits: hoursFromUnits, table: table };
+  var api = { ratioOf: ratioOf, limit: limit, GRID_MAX: GRID_MAX, grid: grid, hoursFromUnits: hoursFromUnits, table: table };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Shusseki = api;
 })(this);

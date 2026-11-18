@@ -5,7 +5,7 @@
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "26693ba3ff6990e0b6523b3aacf0c9e95bee98fc",
+      "commit": "62134849801caf9812b46c33a46b4efb92ac6c15",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "86c59dd3659de00232c2831c60c895ac0b072107",
@@ -40,7 +40,7 @@
     "gengo": {
       "url": "https://github.com/YouheiOonuki/gengo",
       "ref": "main",
-      "commit": "83bbf3ea3e8981372600ecc8949a518f05fe4908",
+      "commit": "2430bf68353e08849d45e6ff5289857587ef8732",
       "files": {
         "calc.js": "43301f9683bdbc05887b58a4085629208fc90791",
         "constants.js": "19abe18a4133d5908c833307672e56e87641e918",
@@ -51,7 +51,7 @@
     "gakko-keisan": {
       "url": "https://github.com/YouheiOonuki/gakko-keisan",
       "ref": "main",
-      "commit": "8e91bd870157f4cbd3056d561d3fc708f9a66d67",
+      "commit": "364cf80626c1a2fdeddec671c74bde17d2283c5b",
       "files": {
         "lib/common.js": "2c80afb80e3c317b40169981756220f6e6fee93a",
         "lib/naishin.js": "76fb057a55d0502ddc7560be672b2ba68abf5d9b",
@@ -66,7 +66,7 @@
     "loan-sim": {
       "url": "https://github.com/YouheiOonuki/loan-sim",
       "ref": "main",
-      "commit": "55390ff17a67c6512daae228e3877d9528ae26c8",
+      "commit": "f7c3e1b92fba6c1192ab55785106adc620da0876",
       "files": {
         "calc.js": "807424b8856ca2d03ffc639283d91078c5b100ab",
         "constants.js": "39806176025e25ba85da9fc406578d811b96ade4"
@@ -75,16 +75,16 @@
     "denki-dai": {
       "url": "https://github.com/YouheiOonuki/denki-dai",
       "ref": "main",
-      "commit": "cd694d72fd92ec66a7b9791d96bbbc6f775a675f",
+      "commit": "5c0a0d03de8ffcaae43d22bcbd090dcc551b22b1",
       "files": {
-        "calc.js": "0f75f3c2c1bf3b3bac6568b76cd38f62b13555f3",
+        "calc.js": "ed38d3fc53e0695b83164c19a740c645e66869f2",
         "constants.js": "a94f13ea8cb6892b4f5c2810180caca747c7c94c"
       }
     },
     "shaho-check": {
       "url": "https://github.com/YouheiOonuki/shaho-check",
       "ref": "main",
-      "commit": "60bca997dd433f7dda0779958a8d93d982b1a5f0",
+      "commit": "af7874e8554e6df88a86aca45af10745138dce1d",
       "files": {
         "judge.js": "21552ce405408f41569e32b72efb6bd07f2fc6c6"
       }

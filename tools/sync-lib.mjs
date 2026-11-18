@@ -2,7 +2,7 @@
 //   node tools/sync-lib.mjs                       既定（隣の作業用クローン ../seido-keisan など の main。正本は PC、D349）から写す
 //   node tools/sync-lib.mjs --seido-keisan=/path/to/seido-keisan --gengo=/path/to/gengo --ref=<commit>
 //   node tools/sync-lib.mjs --check               vendor/ の中身が SOURCES.json の git の blob と同じか（手で直していないか）だけを確かめる
-//   node tools/sync-lib.mjs --drift               写した commit のあと、元のリポジトリの main で lib が変わっていないか（警告だけ。K150 D338）
+//   node tools/sync-lib.mjs --drift               写した commit のあと、元のリポジトリの main で lib が変わっていないか（違いが 1 つでも在れば終了コード 1。npm run deploy の頭で回す。K150 D338・Q-492）
 // vendor/ は手で直さない。計算を直すときはサイトのリポジトリで直してから、これを走らせ直す（手で分岐しない）。
 // 写した元の commit と各ファイルの git の blob の SHA-1 を vendor/SOURCES.json に記録する（GitHub の同じ commit と突き合わせられる）
 import { execFileSync } from 'node:child_process';
@@ -110,10 +110,12 @@ export function drift() {
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   if (process.argv.includes('--drift')) {
-    // 警告だけ（終了コード 0）。差があれば node tools/sync-lib.mjs で写し直し、テストを回して deploy する
+    // 差が 1 つでも在れば終了コード 1（npm run deploy を止める。Q-492）。node tools/sync-lib.mjs で写し直し、テストを回して deploy する
+    // 本館の check.ps1 も同じものを呼ぶが、終了コードは見ない（本館の配信は API の写しの古さで止めない。ROADMAP 7.244 の答え 13）
     const d = drift();
     for (const x of d) console.log(`警告: ${x.repo}/${x.file} が main で変わっている（写したのは ${x.pinned}）。node tools/sync-lib.mjs で写し直す`);
     if (!d.length) console.log('OK: 写した lib は元のリポジトリの main と同じ');
+    else process.exitCode = 1;
   } else if (process.argv.includes('--check')) {
     const bad = check();
     for (const b of bad) console.error(b);

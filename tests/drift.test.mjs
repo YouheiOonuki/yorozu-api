@@ -95,6 +95,22 @@ test('--drift: main を引けてファイルだけが無い時は、違いとし
   assert.doesNotMatch(r.stdout, /比べていない/);
 });
 
+test('--drift: 3 repo を比べて 1 repo の 2 ファイルが違う時は、警告の後に「違い: 比べた 3 repo のうち 1 repo」で終了コード 1（Q-570）', () => {
+  const repos = Object.keys(FILES);
+  const [repo] = repos;
+  const [f1, f2] = FILES[repo];
+  const dir = fakeRepo(join(fake.base, 'two-diffs', repo), repo);
+  for (const f of [f1, f2]) writeFileSync(join(dir, f), readFileSync(join(dir, f), 'utf8') + ' ');
+  commit(dir, false);
+  const dirs = Object.fromEntries(repos.map((r, i) => [r, r === repo ? dir : i < 3 ? fake.dirs[r] : join(fake.base, 'no-such-dir', r)]));
+  const r = runDrift(dirs);
+  assert.equal(r.status, 1, r.stdout + r.stderr);
+  const lines = r.stdout.split('\n').map((l) => l.trim()).filter(Boolean);
+  assert.deepEqual(lines.slice(0, 3).map((l) => l.split('が main')[0]), [`警告: ${repo}/${f1} `, `警告: ${repo}/${f2} `, '違い: 比べた 3 repo のうち 1 repo'], r.stdout);
+  assert.match(lines[3], new RegExp(`^比べていない: ${repos.length - 3} repo（`), r.stdout);
+  assert.doesNotMatch(r.stdout, /^OK: /m);
+});
+
 test('--drift: 写した後に元の main を 1 文字変えると終了コード 1、変えたファイルだけを警告に出す', () => {
   const [repo, files] = Object.entries(FILES)[0];
   const p = join(fake.dirs[repo], files[0]);

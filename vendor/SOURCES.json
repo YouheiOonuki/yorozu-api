@@ -1,6 +1,6 @@
 {
   "note": "vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない",
-  "synced_at": "2026-11-18",
+  "synced_at": "2026-11-19",
   "repos": {
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
@@ -40,10 +40,10 @@
     "gengo": {
       "url": "https://github.com/YouheiOonuki/gengo",
       "ref": "main",
-      "commit": "c3176073a53bd4437484928ecf8813ebeed0410f",
+      "commit": "b6cf20f73bfc64db547a166ab706a81a953b4c9b",
       "files": {
         "calc.js": "43301f9683bdbc05887b58a4085629208fc90791",
-        "constants.js": "19abe18a4133d5908c833307672e56e87641e918",
+        "constants.js": "4008168a7e2c226b4f91e341873e7902b3744528",
         "gakunen-calc.js": "3431dc7acb4146c108b7701990492557e5f3e5aa",
         "yakudoshi-calc.js": "cf1143202e60a0b813f13b7addabc08d18b03a17"
       }
@@ -66,7 +66,7 @@
     "loan-sim": {
       "url": "https://github.com/YouheiOonuki/loan-sim",
       "ref": "main",
-      "commit": "d1d4a7f3b9aa7f4e2b7962269da686353ae6134d",
+      "commit": "2fd74e35868b1c584f881c83419e4e676efa5d4c",
       "files": {
         "calc.js": "807424b8856ca2d03ffc639283d91078c5b100ab",
         "constants.js": "39806176025e25ba85da9fc406578d811b96ade4"
@@ -92,7 +92,7 @@
     "hoshizora-night": {
       "url": "https://github.com/YouheiOonuki/hoshizora-night",
       "ref": "main",
-      "commit": "ca3b33842c293e7211e87fbfa7d32e0543dcccc5",
+      "commit": "d98d0e6ff7efd1d64b130d706cf12756c5c28222",
       "files": {
         "engine/astro.js": "b6c6aa9bafb6937864f9eee6d69ecaa9088eeb61",
         "engine/data.js": "81c073063a98748ada31926c98aae20980663536",

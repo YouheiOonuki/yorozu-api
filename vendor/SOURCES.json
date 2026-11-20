@@ -5,7 +5,7 @@
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "ca43ad0654b15562093587a186f4891f18d67e72",
+      "commit": "7502d00cfdb2f362bfb94b8acee9c020a5503ad1",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "86c59dd3659de00232c2831c60c895ac0b072107",
@@ -40,11 +40,11 @@
     "gengo": {
       "url": "https://github.com/YouheiOonuki/gengo",
       "ref": "main",
-      "commit": "b6cf20f73bfc64db547a166ab706a81a953b4c9b",
+      "commit": "d40e2d77587fbfa0f938753f8537cd6b2c5a999c",
       "files": {
         "calc.js": "43301f9683bdbc05887b58a4085629208fc90791",
         "constants.js": "4008168a7e2c226b4f91e341873e7902b3744528",
-        "gakunen-calc.js": "3431dc7acb4146c108b7701990492557e5f3e5aa",
+        "gakunen-calc.js": "74491d93ba8630a8546fd9b3f03a7c24f747eb89",
         "yakudoshi-calc.js": "cf1143202e60a0b813f13b7addabc08d18b03a17"
       }
     },

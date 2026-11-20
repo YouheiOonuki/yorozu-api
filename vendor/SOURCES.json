@@ -1,11 +1,11 @@
 {
   "note": "vendor/ は tools/sync-lib.mjs がサイトのリポジトリから写したもの。手で直さない",
-  "synced_at": "2026-11-19",
+  "synced_at": "2026-11-20",
   "repos": {
     "seido-keisan": {
       "url": "https://github.com/YouheiOonuki/seido-keisan",
       "ref": "main",
-      "commit": "30e5deccc8fdfcb0be0ec84840919e92578b1240",
+      "commit": "ca43ad0654b15562093587a186f4891f18d67e72",
       "files": {
         "lib/kogaku.js": "43e621d868bcf80330e57927929941308af148b0",
         "lib/kogaku-values.js": "86c59dd3659de00232c2831c60c895ac0b072107",
@@ -51,9 +51,9 @@
     "gakko-keisan": {
       "url": "https://github.com/YouheiOonuki/gakko-keisan",
       "ref": "main",
-      "commit": "fca4ea12f94aab1e6f58c183e2fe6a385f63ea73",
+      "commit": "45c7c5cfd3d7940ed6cc61ed571f1ef7bdf66d00",
       "files": {
-        "lib/common.js": "2c80afb80e3c317b40169981756220f6e6fee93a",
+        "lib/common.js": "df13245d768d7b4044e556a1972fd4fb945118b9",
         "lib/naishin.js": "9612e75a6ef760f4a14a8c7656ff1e36f71ec1cb",
         "lib/naishin-values.js": "adb2fe5c6c91806694721f6b0609ddb0964cca2d",
         "lib/shusseki.js": "476717a9d6bdc06303bea4210d200dd554e331b2",
@@ -66,18 +66,18 @@
     "loan-sim": {
       "url": "https://github.com/YouheiOonuki/loan-sim",
       "ref": "main",
-      "commit": "2fd74e35868b1c584f881c83419e4e676efa5d4c",
+      "commit": "a741f3e55314924770032e480e873d9f87efea51",
       "files": {
-        "calc.js": "807424b8856ca2d03ffc639283d91078c5b100ab",
+        "calc.js": "b513a25070588bf08f69b1c90b641a07c3bcec31",
         "constants.js": "39806176025e25ba85da9fc406578d811b96ade4"
       }
     },
     "denki-dai": {
       "url": "https://github.com/YouheiOonuki/denki-dai",
       "ref": "main",
-      "commit": "bdcffc3831814ab3f575524e67e77717a3a501e5",
+      "commit": "65a13f6d99d0282806dc97b6b4a6056ed18368c7",
       "files": {
-        "calc.js": "ed38d3fc53e0695b83164c19a740c645e66869f2",
+        "calc.js": "e4747ee857edb03eda4b339bd31f367037987499",
         "constants.js": "3bbafd0930873e1ebf4690987ede3c552627f9e8"
       }
     },

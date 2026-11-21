@@ -49,7 +49,7 @@ export const FILES = {
 };
 
 // git の blob の SHA-1（git hash-object と同じ）
-export function blobSha(buf) {
+function blobSha(buf) {
   return createHash('sha1').update(Buffer.concat([Buffer.from('blob ' + buf.length + '\0'), buf])).digest('hex');
 }
 

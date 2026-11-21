@@ -10,9 +10,9 @@ import Look from '../vendor/hoshizora-night/render/look.js';
 
 const { DEG } = Astro;
 const SITE = 'https://yorozu-craft.com';
-export const HOUR = 21; // 見る時刻（日本時間）
-export const MIN_ALT_CONS = 20; // 星座の中心の高さ（度）
-export const MIN_ALT_PLANET = 10;
+const HOUR = 21; // 見る時刻（日本時間）
+const MIN_ALT_CONS = 20; // 星座の中心の高さ（度）
+const MIN_ALT_PLANET = 10;
 const PLANET_JA = { mercury: '水星', venus: '金星', mars: '火星', jupiter: '木星', saturn: '土星' };
 const DIR8 = ['北', '北東', '東', '南東', '南', '南西', '西', '北西'];
 export const dir8 = (azDeg) => DIR8[Math.round((((azDeg % 360) + 360) % 360) / 45) % 8];
@@ -26,7 +26,7 @@ export function findPref(place) {
 
 /** 日本時間の YYYY-MM-DD の h 時 → UNIX ミリ秒 */
 export const jstMs = (ymd, h = HOUR) => Date.parse(`${ymd}T${String(h).padStart(2, '0')}:00:00+09:00`);
-export const jstYmd = (ms) => new Date(ms + 9 * 3600e3).toISOString().slice(0, 10);
+const jstYmd = (ms) => new Date(ms + 9 * 3600e3).toISOString().slice(0, 10);
 const hhmm = (ms) => new Date(ms + 9 * 3600e3).toISOString().slice(11, 16);
 
 /** 赤経・赤緯（ラジアン、その日の分点）→ 高さ・方位（度。方位は北から東回り） */
@@ -74,7 +74,7 @@ function moonRiseSet(ymd, lat, lon) {
  * 月齢 ＝ 直前の朔（太陽と月の黄経がそろった時）からの日数（国立天文台の正午月齢と同じ定義）。engine の sun・moon の黄経から、
  * 1 時間ずつさかのぼって差が 0 をまたぐ所を見つけ、二分法で 1 分まで詰める。engine の moon().age（角度から出した値）は、この定義と最大 0.9 日ずれた（企画書 82 の 3 章）
  */
-export function moonAgeDays(ms) {
+function moonAgeDays(ms) {
   const el = (t) => { const d = Astro.moon(t).lon - Astro.sun(t).lon; return ((d % Astro.TAU) + Astro.TAU) % Astro.TAU; };
   let hi = ms, lo = ms - 3600e3;
   for (let i = 0; i < 24 * 31; i++, hi = lo, lo -= 3600e3) if (el(lo) > el(hi)) break; // 差は朔で 2π → 0 に戻る

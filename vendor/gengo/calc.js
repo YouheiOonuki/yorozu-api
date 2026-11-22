@@ -28,6 +28,9 @@
   function fromDays(n) { var dt = new Date(n * 864e5); return { y: dt.getUTCFullYear(), m: dt.getUTCMonth() + 1, d: dt.getUTCDate() }; }
   function addDays(o, n) { return fromDays(toDays(o) + n); }
 
+  /** HTML に入れる字を逃がす（& < > " '）。画面の組み立てはどれもこれを使う */
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
   // --- 元号 ---
   var ERAS = K.ERAS.map(function (e) {
     return Object.assign({}, e, { startD: parseYmd(e.start), endD: e.end ? parseYmd(e.end) : null });
@@ -418,7 +421,7 @@
     fiscalYearOf: G.fiscalYearOf, gradeNumber: G.gradeNumber, gradeTable: G.gradeTable, resumeHistory: G.resumeHistory, gradeByAge: gradeByAge,
     kazoeAge: Y.kazoeAge, yakuTable: Y.yakuTable, yakuOf: Y.yakuOf, toshiiwaiTable: Y.toshiiwaiTable, toshiiwaiOf: Y.toshiiwaiOf,
     kanjiNumber: kanjiNumber, kaikiName: kaikiName, memorialDay: memorialDay, kaikiList: kaikiList, chuinList: chuinList,
-    kaikiYearTable: kaikiYearTable, weekdayOf: weekdayOf
+    kaikiYearTable: kaikiYearTable, weekdayOf: weekdayOf, esc: esc
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Calc = api;

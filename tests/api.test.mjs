@@ -107,6 +107,9 @@ test('認証なし・CORS *・キャッシュさせない・入力を console �
   assert.ok(!/authorization|api[-_]?key|bearer/i.test(s));
   const toml = readFileSync(join(root, 'wrangler.toml'), 'utf8');
   assert.match(toml, /\[observability\][^[]*enabled = false/);
+  // 1 回の CPU の上限（Workers Paid。yorozu-plans QUEUE Q-1024）と、Free の頃の文が残っていないこと
+  assert.match(toml, /\[limits\][^[]*cpu_ms = 50\b/);
+  assert.ok(!/Free プランのまま|請求は起きない/.test(toml));
 });
 
 test('クエリの入れ子と配列（rows.0.cost）、__proto__ は無視', () => {

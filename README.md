@@ -1,10 +1,10 @@
 # yorozu-api
 
-[yorozu-craft](https://yorozu-craft.com/) の計算（年末調整・住民税・高額療養費・年金の繰上げ繰下げ・子ども子育て支援金・インボイス 2割特例の後の消費税・和暦・学年）を、JSON で返す API と、同じ計算のリモート MCP サーバーです（Cloudflare Workers の無料枠。yorozu-plans ROADMAP 7.17 の K134）。
+[yorozu-craft](https://yorozu-craft.com/) の計算（年末調整・住民税・高額療養費・年金の繰上げ繰下げ・子ども子育て支援金・インボイス 2割特例の後の消費税・和暦・学年）を、JSON で返す API と、同じ計算のリモート MCP サーバーです（Cloudflare Workers。yorozu-plans ROADMAP 7.17 の K134）。
 
 - **認証なし**。API キーもアカウントもありません
 - **入力を保存しない**。console に出さず、Workers Logs を切っています（`wrangler.toml` の `[observability] enabled = false`）。数は Cloudflare のダッシュボードの要求数だけを見ます
-- **無料枠の上限で止まる**。Workers Free プラン（1 日 10 万要求）のままにします。超えた分はエラーで返り、課金されません
+- **アカウントは Workers Paid**。含まれる量を超えた分は課金されます。守りは、オーナーが置く spending limit と、1 回の CPU の上限（`wrangler.toml` の `[limits] cpu_ms = 50`）です
 - どの返り値にも `meta`（出典 `source`・確認日 `checked`・免責の文 `disclaimer`・写した元の commit `lib`）が付きます
 
 ## 使い方
@@ -71,7 +71,7 @@ npm test
 ## オーナーの手順（デプロイ）
 
 1. GitHub に `YouheiOonuki/yorozu-api` を作り、このフォルダを push する
-2. Cloudflare のアカウントが **Workers Free プラン**のままか確かめる（ダッシュボード → Workers & Pages → Plans）
+2. Cloudflare のアカウントに spending limit が置いてあるか確かめる（アカウントは Workers Paid。含まれる量を超えた分は課金される）
 3. 手元で `npm install` → `npx wrangler login`（ブラウザで Cloudflare に許可）→ `npm run deploy`（テストが通ったときだけデプロイ）
    - `npm run deploy` は頭で `node tools/sync-lib.mjs --drift` を回し、写した lib が元のリポジトリの main より古ければ止まる（終了コード 1）。`node tools/sync-lib.mjs` で写し直し、`npm test` を通してからもう一度
    - ダッシュボードから行うなら: Workers & Pages → Create → Import a repository → `yorozu-api` を選ぶ（Build command は空、Deploy command は `npx wrangler deploy`）。この道は `npm run deploy` を通らないので、写しが元のリポジトリより古くても止まりません。

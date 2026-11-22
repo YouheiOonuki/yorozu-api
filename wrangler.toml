@@ -10,5 +10,8 @@ preview_urls = false
 [observability]
 enabled = false
 
-# 無料枠の上限で止まる: このアカウントを Workers Free プランのままにする（1 日 10 万要求。超えた分はエラーで返り、課金されない）。
-# Workers Paid に上げない限り請求は起きない。Paid にしたときは CPU 時間の上限をここで決める（[limits] cpu_ms）
+# アカウントは Workers Paid（2026-11-22〜）。含まれる量を超えた分は課金される。
+# 守りは、オーナーが置く spending limit と、下の 1 回の CPU の上限（yorozu-plans ROADMAP 7.263 の D775、7.264 の D797）。
+# 50ms: 直近 7 日の 1 回の CPU の最大 11.5ms（2026-11-22 の測り。QUEUE Q-1023）の 4 倍を 10ms の単位に切り上げた数と、下の線 50ms の大きい方
+[limits]
+cpu_ms = 50

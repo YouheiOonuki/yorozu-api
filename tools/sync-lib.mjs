@@ -31,7 +31,9 @@ export const FILES = {
     'lib/ikukyu.js',
     'lib/iryohi.js', 'lib/iryohi-values.js',
     'lib/koko.js', 'lib/koko-values.js',
-    'lib/pension-refund.js', 'lib/dattai-values.js',
+    'lib/pension-refund.js',
+    'lib/sokusan.js',   // 速算表の正本。dattai-values.js が読む（Q-960）ので、読む側より前に置く（Q-1297）
+    'lib/dattai-values.js',
     'lib/kaitei.js',
     'lib/take-home.js', 'lib/take-home-values.js',
     'lib/yobosesshu.js', 'lib/yobosesshu-values.js',
